@@ -19,6 +19,7 @@ xcuserdata
 DerivedData
 *.hmap
 *.ipa
+*.zip
 *.xcuserstate
 project.xcworkspace
 
@@ -26,7 +27,8 @@ project.xcworkspace
 #
 build/
 .idea
-.gradle
+.gradle/buildOutputCleanup
+.gradle/4.*
 local.properties
 *.iml
 
