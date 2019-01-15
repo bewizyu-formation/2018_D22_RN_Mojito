@@ -54,6 +54,26 @@ export default class APIClient {
       .catch();
   }
 
+  static updateUser(token, userFirstName, userLastName, userEmail, userProfile) {
+    return fetch('https://familink-api.cleverapps.io/secured/users',
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        method: 'PUT',
+        body: JSON.stringify({
+          firstName: userFirstName,
+          lastName: userLastName,
+          email: userEmail,
+          profile: userProfile,
+        }),
+      })
+      .then(response => response.json())
+      .then(responseJSON => responseJSON)
+      .catch();
+  }
+
   static getProfiles() {
     return fetch('https://familink-api.cleverapps.io/public/profiles',
       {
