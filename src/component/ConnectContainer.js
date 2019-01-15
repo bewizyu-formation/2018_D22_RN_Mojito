@@ -2,6 +2,23 @@ import React, { Component } from 'react';
 import { NetInfo, View } from 'react-native';
 import { AppContainer } from '../screen/StackNavigator';
 
+import { combineReducers, createStore, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
+import {createLogger} from 'redux-logger';
+import thunk from 'redux-thunk';
+
+import {easycallReducer} from '../store/easycall.reducer';
+
+// Assemblage des différents reducers d'une application
+const reducers = combineReducers({
+  easycall: easycallReducer,
+});
+const logger = createLogger({
+  level: 'log',
+});
+
+// Création du store
+const store = createStore(reducers, applyMiddleware(thunk,logger));
 
 export default class ConnectContainer extends Component {
   constructor(props) {
@@ -33,9 +50,11 @@ export default class ConnectContainer extends Component {
     isConnected ? this.setState({ isConnected: true }) : this.setState({ isConnected: false });
   }
 
-  render() {
-    return (
-      <AppContainer />
-    );
-  }
+    render() {
+        return (
+            <Provider store={store}>
+                <AppContainer />
+            </Provider>
+        )
+    }
 }
