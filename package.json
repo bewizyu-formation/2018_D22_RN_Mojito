@@ -5,8 +5,8 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
-    "lint": "eslint ./src ./index.*.js --ext .js",
-    "lintfix": "eslint ./src ./index.*.js --ext .js --fix"
+    "lint": "eslint ./src/* --ext .js",
+    "lintfix": "eslint ./src/* --ext .js --fix"
   },
   "dependencies": {
     "prop-types": "^15.6.2",
