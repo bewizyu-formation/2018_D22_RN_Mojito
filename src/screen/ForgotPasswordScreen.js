@@ -12,7 +12,7 @@ export default class ForgotPasswordScreen extends Component {
     render() {
         return (
             <View>
-                <Text>Login</Text>
+                <Text>ForgotPassword</Text>
             </View>
         );
 

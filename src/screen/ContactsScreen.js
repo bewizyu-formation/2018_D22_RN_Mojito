@@ -12,7 +12,7 @@ export default class ContactsScreen extends Component {
     render() {
         return (
             <View>
-                <Text>Login</Text>
+                <Text>Contacts</Text>
             </View>
         );
 
