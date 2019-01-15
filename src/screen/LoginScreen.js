@@ -27,13 +27,13 @@ export default class LoginScreen extends Component {
                 <Text style={styles.text}>Numéro de téléphone</Text>
                 <TextInput
                     style={styles.textInput}
-                    placeholder="Entrer votre numéro de téléphone"
-                    keyboardType="phone-pad"
+                    placeholder='Entrer votre numéro de téléphone'
+                    keyboardType='phone-pad'
                 />
                 <Text style={styles.text}>Mot de passe</Text>
                 <TextInput
                     style={styles.textInput}
-                    placeholder="Entrer votre mot de passe"
+                    placeholder='Entrer votre mot de passe'
                 />
                 <Text style={styles.link} onPress={()=>{
                     this.props.navigation.navigate('ForgotPassword');
@@ -68,12 +68,12 @@ export default class LoginScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1, 
-        flexDirection: "column", 
-        alignItems:"center", 
-        backgroundColor:"#FECB98"
+        flexDirection: 'column', 
+        alignItems:'center', 
+        backgroundColor:'#FECB98'
     },
     link:{
-        color:"#FF6C00"
+        color:'#FF6C00'
     },
     textInput: {
         width: 250, 
@@ -93,9 +93,9 @@ const styles = StyleSheet.create({
         fontSize: 20
     },
     textButton: {
-        fontWeight: "bold",
+        fontWeight: 'bold',
         fontSize: 20,
-        textAlign: "center",
+        textAlign: 'center',
         color: '#FFFFFF',
         margin:5
     },
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
         margin: 5,
         width: 250,
         height: 40,
-        backgroundColor:"#FF6C00"
+        backgroundColor:'#FF6C00'
     },
     
     buttonContainer:{
