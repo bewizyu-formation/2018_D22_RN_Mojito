@@ -2,39 +2,18 @@ import React, { Component } from 'react';
 import { NetInfo, View } from 'react-native';
 import { AppContainer } from '../screen/StackNavigator';
 
-import { combineReducers, createStore, applyMiddleware } from 'redux';
-import { Provider } from 'react-redux';
-import {createLogger} from 'redux-logger';
-import thunk from 'redux-thunk';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types'
+import { updateConnectivity } from '../store/easycall.action';
 
-import {easycallReducer} from '../store/easycall.reducer';
-
-// Assemblage des différents reducers d'une application
-const reducers = combineReducers({
-  easycall: easycallReducer,
-});
-const logger = createLogger({
-  level: 'log',
-});
-
-// Création du store
-const store = createStore(reducers, applyMiddleware(thunk,logger));
-
-export default class ConnectContainer extends Component {
+export class ConnectContainer extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      connected: undefined,
-    };
     this.handleConnectivityChange = this.handleConnectivityChange.bind(this);
   }
 
   componentDidMount() {
-    NetInfo.isConnected.fetch().then((isConnected) => {
-      this.setState({ connected: isConnected });
-    })
-      .catch();
     NetInfo.isConnected.addEventListener(
       'connectionChange',
       this.handleConnectivityChange,
@@ -45,16 +24,28 @@ export default class ConnectContainer extends Component {
     NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
   }
 
-
   handleConnectivityChange(isConnected) {
-    isConnected ? this.setState({ isConnected: true }) : this.setState({ isConnected: false });
+    this.props.updateConnectivity(isConnected);
   }
 
-    render() {
-        return (
-            <Provider store={store}>
-                <AppContainer />
-            </Provider>
-        )
-    }
+  render() {
+      return (
+        <AppContainer />
+      )
+  }
 }
+
+ConnectContainer.propTypes = {
+  connectivity: PropTypes.bool.isRequired,
+  updateConnectivity: PropTypes.func.isRequired,
+}
+const mapStateToProps = state => ({
+  connectivity: state.easycall.connectivity,
+});
+const mapDispatchToProps = dispatch => ({
+  updateConnectivity: connectivity => dispatch(updateConnectivity(connectivity)),
+})
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ConnectContainer)

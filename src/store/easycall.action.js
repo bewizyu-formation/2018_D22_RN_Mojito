@@ -1,3 +1,5 @@
+export const UPDATE_CONNECTIVITY = 'UPDATE_CONNECTIVITY';
+
 export const CONNECT_USER = 'CONNECT_USER';
 export const DISCONNECT_USER = 'DISCONNECT_USER';
 export const CREATE_USER = 'CREATE_USER';
@@ -7,6 +9,13 @@ export const ADD_CONTACT = 'ADD_CONTACT';
 export const DELETE_CONTACT = 'DELETE_CONTACT';
 export const UPDATE_CONTACT = 'UPDATE_CONTACT';
 export const LOAD_CONTACTS = 'LOAD_CONTACTS';
+
+export function updateConnectivity(connectivity) {
+    return {
+        type : UPDATE_CONNECTIVITY,
+        connectivity
+    }
+}
 
 export function addContact(phone, firstName, lastName, email, profile, gravatar, isFamilinkUser, isEmergencyUser) {
     return {
