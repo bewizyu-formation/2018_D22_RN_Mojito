@@ -10,15 +10,6 @@ const styles = StyleSheet.create({
   backgroundGeneral: {
       backgroundColor: '#FECB98',
   },
-  circleImage: {
-    borderWidth:1,
-    borderColor:'rgba(0,0,0,0.2)',
-    width:150,
-    height:150,
-    backgroundColor:'#FF6C00',
-    borderRadius:100,
-    marginTop: 20,
-  },
   textStyle: {
     color: '#FFF',
     fontSize: 20,
@@ -33,6 +24,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-around',
+    marginTop: 40,
     marginBottom: 30,
   },
   footerIcons:{
@@ -76,13 +68,13 @@ export default class DetailScreen extends Component {
       <View style={[{flex:1}, styles.backgroundGeneral]}>
         <View style={[styles.iconAlignement]}>
         <TouchableOpacity>
-            <Image style={ styles.imageStyle} source={require('../assets/trash-icon.png')}/>
+            <Image style={styles.imageStyle} source={require('../assets/trash-icon.png')}/>
           </TouchableOpacity>
           <TouchableOpacity>
-            <Image style={style= styles.circleImage} source={require('../assets/user-icon.png')}/>
+            <Image source={require('../assets/user-icon.png')}/>
           </TouchableOpacity>
-          <TouchableOpacity>
-            <Image style={ styles.imageStyle} source={require('../assets/edit-icon.png')}/>
+          <TouchableOpacity onPress={() => navigation.navigate('CreateContact')}>
+            <Image style={styles.imageStyle} source={require('../assets/edit-icon.png')}/>
           </TouchableOpacity>
         </View>
         <View style={[styles.container, styles.backgroundGeneral]}>
