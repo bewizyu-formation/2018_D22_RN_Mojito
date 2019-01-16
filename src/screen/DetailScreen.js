@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { Text, View, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { Text, View, TouchableOpacity, Image, StyleSheet, Linking } from 'react-native';
+import { deleteContact } from '../store/contact.action';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 const styles = StyleSheet.create({
   container: {
@@ -48,6 +51,7 @@ const styles = StyleSheet.create({
     width: 80
   }
 });
+//retirer l'export par defaut
 export default class DetailScreen extends Component {
   static navigationOptions =({navigation})=> ({
     headerTitle: 'Détails',
@@ -55,6 +59,10 @@ export default class DetailScreen extends Component {
 
   constructor(props) {
     super(props);
+  }
+
+  onPressDelete = () => {
+    this.props.deleteContact(/* ajouter token et idcontact */);
   }
 
   render() {
@@ -67,13 +75,21 @@ export default class DetailScreen extends Component {
     return (
       <View style={[{flex:1}, styles.backgroundGeneral]}>
         <View style={[styles.iconAlignement]}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => this.onPressDelete }>
             <Image style={styles.imageStyle} source={require('../assets/trash-icon.png')}/>
           </TouchableOpacity>
           <TouchableOpacity>
             <Image source={require('../assets/user-icon.png')}/>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('CreateContact')}>
+          <TouchableOpacity onPress={() => navigation.navigate('CreateContact', {
+            firstName: item.firstName,
+            lastName: item.lastName,
+            phone: item.phone,
+            email: item.email,
+            gravatar: item.gravatar,
+            profile: item.profile,
+            isEmergencyUser: item.isEmergencyUser
+          })}>
             <Image style={styles.imageStyle} source={require('../assets/edit-icon.png')}/>
           </TouchableOpacity>
         </View>
@@ -86,13 +102,13 @@ export default class DetailScreen extends Component {
         </View>
         <View style={styles.footerIcons}>
           <View style={styles.iconSpacing}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => Linking.openURL(`sms:${phone}`)}>
             <Image style={ styles.imageStyleBottom} source={require('../assets/sms-icon.png')}/>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => Linking.openURL(`mailto:${email}`)} title="email test">
             <Image style={ styles.imageStyleBottom} source={require('../assets/email-icon.png')}/>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => Linking.openURL(`tel:${phone}`)}>
             <Image style={ styles.imageStyleBottom} source={require('../assets/phone-icon.png')}/>
           </TouchableOpacity>
           </View>
@@ -101,3 +117,22 @@ export default class DetailScreen extends Component {
     );
   }
 }
+
+DetailScreen.propTypes = {
+  deleteContact: PropTypes.func.isRequired
+}
+
+/*const mapStateToProps = state => ({
+  contact: state.contact.,
+  loading: state.formations.loading,
+});
+
+const mapDispatchToProps = dispatch => ({
+  deleteContact: title => dispatch(deleteContact(/*token idcontact)),
+  loadFormations: () => dispatch(loadFormations()),
+  })
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(DetailScreen)*/
