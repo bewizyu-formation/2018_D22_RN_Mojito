@@ -16,7 +16,7 @@ const AppNavigator = createStackNavigator(
     ForgotPassword: ForgotPasswordScreen,
   },
   {
-    initialRouteName: 'Contacts',
+    initialRouteName: 'Login',
   },
 );
 

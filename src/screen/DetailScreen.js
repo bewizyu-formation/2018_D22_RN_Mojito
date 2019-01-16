@@ -10,7 +10,7 @@ export default class DetailScreen extends Component {
   render() {
     return (
       <View>
-        <Text>Login</Text>
+        <Text>Detail</Text>
       </View>
     );
   }
