@@ -129,7 +129,9 @@ export default class APIClient {
       .catch();
   }
 
-  static updateContact(token, idContact) {
+  static updateContact(token, idContact, contactPhoneNumber, contactFirstName,
+    contactLastName, contactEmail, contactProfile, contactGravatar,
+    contactIsFamilinkUser, contactIsEmergencyUser) {
     fetch(`https://familink-api.cleverapps.io/secured/users/contacts/${idContact}`,
       {
         headers: {
@@ -137,6 +139,16 @@ export default class APIClient {
           Authorization: `Bearer ${token}`,
         },
         method: 'PUT',
+        body: JSON.stringify({
+          phone: contactPhoneNumber,
+          firstName: contactFirstName,
+          lastName: contactLastName,
+          email: contactEmail,
+          profile: contactProfile,
+          gravatar: contactGravatar,
+          isFamilinkUser: contactIsFamilinkUser,
+          isEmergencyUser: contactIsEmergencyUser,
+        }),
       })
       .then(response => response.json())
       .then(responseJSON => responseJSON)
