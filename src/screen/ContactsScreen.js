@@ -98,7 +98,7 @@ export default class ContactsScreen extends Component {
             phone: item.phone,
             email: item.email,
             gravatar: item.gravatar,
-            isEmergencyUser: itemm.isEmergencyUser
+            isEmergencyUser: item.isEmergencyUser
         });
     }
 
