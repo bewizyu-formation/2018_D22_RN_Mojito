@@ -91,7 +91,7 @@ export default class LoginScreen extends Component {
   }
 
   onPasswordChange(value) {
-    this.setState({ password: '' });
+    this.setState({ password: value });
   }
 
   render() {
