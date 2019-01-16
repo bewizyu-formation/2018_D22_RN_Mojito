@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-    View, Button, StyleSheet, TouchableOpacity, FlatList,
+    View, Button, StyleSheet, TouchableOpacity, FlatList, Text
 } from 'react-native';
 import ContactItem from '../component/ContactItem';
 import PropTypes from 'prop-types';
@@ -18,9 +18,14 @@ const styles = StyleSheet.create({
 });
 
 export default class ContactsScreen extends Component {
-    static navigationOptions = {
+    static navigationOptions =({navigation})=> ({
         headerTitle: 'Contacts',
-    };
+        headerRight:(
+             <TouchableOpacity onPress={() => navigation.navigate('CreateContact')}>
+                <Text>ADD</Text>
+            </TouchableOpacity>
+      )
+    });
 
     constructor(props) {
         super(props);
@@ -33,6 +38,7 @@ export default class ContactsScreen extends Component {
                     email: 'test1@SpeechGrammarList.com',
                     profile: 'FAMILLE',
                     gravatar: 'https://www.gravatar.com/avatar/ad014a4630fad95df1e5a61809e49cf2',
+                    isEmergencyUser : false
                 },
                 {
                     phone: '0606060606',
@@ -41,6 +47,7 @@ export default class ContactsScreen extends Component {
                     email: 'test2@SpeechGrammarList.com',
                     profile: 'FAMILLE',
                     gravatar: 'https://www.gravatar.com/avatar/ad014a4630fad95df1e5a61809e49cf2',
+                    isEmergencyUser: false
                 },
                 {
                     phone: '0606060606',
@@ -49,6 +56,7 @@ export default class ContactsScreen extends Component {
                     email: 'test3@SpeechGrammarList.com',
                     profile: 'MEDECIN',
                     gravatar: 'https://www.gravatar.com/avatar/ad014a4630fad95df1e5a61809e49cf2',
+                    isEmergencyUser: false
                 },
                 {
                     phone: '0606060606',
@@ -57,6 +65,7 @@ export default class ContactsScreen extends Component {
                     email: 'test4@SpeechGrammarList.com',
                     profile: 'FAMILLE',
                     gravatar: 'https://www.gravatar.com/avatar/ad014a4630fad95df1e5a61809e49cf2',
+                    isEmergencyUser: false
                 },
                 {
                     phone: '0606060606',
@@ -65,6 +74,7 @@ export default class ContactsScreen extends Component {
                     email: 'test5@SpeechGrammarList.com',
                     profile: 'SENIOR',
                     gravatar: 'https://www.gravatar.com/avatar/ad014a4630fad95df1e5a61809e49cf2',
+                    isEmergencyUser: true
                 },
                 {
                     phone: '0606060606',
@@ -73,24 +83,27 @@ export default class ContactsScreen extends Component {
                     email: 'test1@SpeechGrammarList.com',
                     profile: 'FAMILLE',
                     gravatar: 'https://www.gravatar.com/avatar/ad014a4630fad95df1e5a61809e49cf2',
+                    isEmergencyUser: true
                 },
             ],
         };
         this.onPressContact = this.onPressContact.bind(this);
-        this.onPressCategory = this.onPressCategory.bind(this);
+        this.onPressProfile = this.onPressProfile.bind(this);
     }
 
     onPressContact = (item) => {
         this.props.navigation.navigate('Detail', {
             firstName: item.firstName,
             lastName: item.lastName,
+            phone: item.phone,
+            email: item.email,
+            gravatar: item.gravatar,
+            isEmergencyUser: itemm.isEmergencyUser
         });
     }
 
-    onPressCategory = (event) => {
-        this.setState({
-
-        });
+    onPressProfile = (event) => {
+        //filtrage sur le profil
     }
 
     render() {
@@ -98,27 +111,27 @@ export default class ContactsScreen extends Component {
             <View>
                 <View style={styles.container}>
                     <Button
-                        onPress={this.onPressCategory}
+                        onPress={this.onPressProfile}
                         title="TOUS"
                         color='#FF6C00'
                     />
                     <Button
-                        onPress={this.onPressCategory}
+                        onPress={this.onPressProfile}
                         title="FAMILLE"
                         color='#FF6C00'
                     />
                     <Button
-                        onPress={this.onPressCategory}
+                        onPress={this.onPressProfile}
                         title="SENIOR"
                         color='#FF6C00'
                     />
                     <Button
-                        onPress={this.onPressCategory}
+                        onPress={this.onPressProfile}
                         title="MEDECIN"
                         color='#FF6C00'
                     />
                     <Button
-                        onPress={this.onPressCategory}
+                        onPress={this.onPressProfile}
                         title="URGENT"
                         color='#FF6C00'
                     />
@@ -140,6 +153,7 @@ export default class ContactsScreen extends Component {
 }
 
 ContactsScreen.propTypes = {
-    navigation: PropTypes.func.isRequired,
-    navigate: PropTypes.func.isRequired
+    navigation: PropTypes.shape({
+        navigate: PropTypes.func.isRequired
+    })
 };
