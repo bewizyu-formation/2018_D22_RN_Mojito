@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Text, TextInput, View, Image, StyleSheet, TouchableHighlight, KeyboardAvoidingView
+  Text, TextInput, View, Image, StyleSheet, TouchableHighlight, KeyboardAvoidingView,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { connect } from 'react-redux';
+import { loginUser } from '../store/connect.action';
 
 
 const styles = StyleSheet.create({
@@ -12,7 +14,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     backgroundColor: '#FECB98',
-    padding:10
+    padding: 10,
   },
   link: {
     color: '#FF6C00',
@@ -52,20 +54,20 @@ const styles = StyleSheet.create({
     margin: 5,
     width: 250,
     height: 40,
-    backgroundColor: '#FF6C00'
+    backgroundColor: '#FF6C00',
   },
   secondaryButton: {
     margin: 5,
     width: 250,
     height: 40,
-    backgroundColor: '#FFFFFF'
+    backgroundColor: '#FFFFFF',
   },
   buttonContainer: {
     margin: 20,
   },
 });
 
-export default class LoginScreen extends Component {
+class LoginScreen extends Component {
   static navigationOptions = {
     title: 'Connexion',
     headerTitleStyle: {
@@ -79,93 +81,111 @@ export default class LoginScreen extends Component {
 
     this.state = {
       phone: '',
-      password: ''
-    }
+      password: '',
+    };
 
     this.onPhoneChange = this.onPhoneChange.bind(this);
     this.onPasswordChange = this.onPasswordChange.bind(this);
-  }
-
-  onPhoneChange(value) {
-    this.setState({ phone: value });
-  }
-
-  onPasswordChange(value) {
-    this.setState({ password: value });
   }
 
   render() {
     return (
       <ScrollView>
         <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-        <Image
-          style={styles.logo}
-          source={{ uri: 'http://www.startup-innovation.fr/img/empty.png' }}
-        />
-        <Text style={styles.text}>Numéro de téléphone</Text>
-        <TextInput
-          style={styles.textInput}
-          placeholder="Entrer votre numéro de téléphone"
-          keyboardType="phone-pad"
-          onChangeText={this.onPhoneChange}
-        />
-        <Text style={styles.text}>Mot de passe</Text>
-        <TextInput
-          style={styles.textInput}
-          placeholder="Entrer votre mot de passe"
-          onChangeText={this.onPasswordChange}
-        />
-        <Text
-          style={styles.link}
-          onPress={() => {
-            this.props.navigation.navigate('ForgotPassword');
-          }}
-        >
+          <Image
+            style={styles.logo}
+            source={{ uri: 'http://www.startup-innovation.fr/img/empty.png' }}
+          />
+          <Text style={styles.text}>Numéro de téléphone</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Entrer votre numéro de téléphone"
+            keyboardType="phone-pad"
+            value={this.state.phone}
+            onChangeText={text => this.setState({ phone: text })}
+          />
+          <Text style={styles.text}>Mot de passe</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Entrer votre mot de passe"
+            value={this.state.password}
+            onChangeText={text => this.setState({ password: text })}
+          />
+          <Text
+            style={styles.link}
+            onPress={() => {
+              this.props.navigation.navigate('ForgotPassword');
+            }}
+          >
           Mot de passe oublié ?
           </Text>
 
-        <View style={styles.buttonContainer}>
-          <TouchableHighlight
-            onPress={() => {
-              if(this.state.phone.length != 10){
-                alert("Numéro de téléphone invalide");
-              }else if(this.state.password == ''){
-                alert("Mot de passe requis")
-              } else {  
-                //TODO: Vérifier si utilisateur existe
-                this.props.navigation.navigate('Contacts');
-              }
-              
-            }}
-            style={styles.primaryButton}
-          >
+          <View style={styles.buttonContainer}>
+            <TouchableHighlight
+              onPress={() => {
+                if (this.props.connectivity) {
+                  if (this.state.phone.length !== 10) {
+                    alert('Numéro de téléphone invalide');
+                  } else if (this.state.password === '') {
+                    alert('Mot de passe requis');
+                  } else {
+                    this.props.loginUser(this.state.phone, this.state.password)
+                      .then(() => {
+                        if (this.props.loginError === undefined) {
+                          this.props.navigation.navigate('Contacts');
+                        } else {
+                          alert('Mot de passe ou numéro de téléphone non valide');
+                        }
+                      });
+                  }
+                } else {
+                  alert('Pas de connexion internet');
+                }
+              }}
+              style={styles.primaryButton}
+            >
 
-            <Text style={styles.textPrimaryButton}>Se connecter</Text>
+              <Text style={styles.textPrimaryButton}>Se connecter</Text>
 
-          </TouchableHighlight>
+            </TouchableHighlight>
 
-          <TouchableHighlight
-            onPress={() => {
-              this.props.navigation.navigate('CreateAccount');
-            }}
-            style={styles.secondaryButton}
-          >
+            <TouchableHighlight
+              onPress={() => {
+                this.props.navigation.navigate('CreateAccount');
+              }}
+              style={styles.secondaryButton}
+            >
 
-            <Text style={styles.textSecondaryButton}>S&#39;inscrire</Text>
+              <Text style={styles.textSecondaryButton}>S&#39;inscrire</Text>
 
-          </TouchableHighlight>
-        </View>
-      </KeyboardAvoidingView>
+            </TouchableHighlight>
+          </View>
+        </KeyboardAvoidingView>
 
       </ScrollView>
-      
-      );
+
+    );
   }
 }
 
 LoginScreen.propTypes = {
   navigation: PropTypes.shape({
-    navigate: PropTypes.func.isRequired
+    navigate: PropTypes.func.isRequired,
   }),
+  connectivity: PropTypes.bool.isRequired,
+  loginUser: PropTypes.func.isRequired,
+  loginError: PropTypes.string,
 
-}
+};
+
+const mapStateToProps = state => ({
+  connectivity: state.connect.connectivity,
+  loginError: state.connect.loginError,
+});
+const mapDispatchToProps = dispatch => ({
+  loginUser: (phone, password) => dispatch(loginUser(phone, password)),
+});
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(LoginScreen);
