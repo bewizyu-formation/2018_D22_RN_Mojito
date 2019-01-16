@@ -1,5 +1,5 @@
 import { UPDATE_CONNECTIVITY } from './connect.action';
-import { USER_LOGGEDIN, LOGIN_USER, LOGOUT_USER, DISCONNECT_USER,CREATE_USER,UPDATE_USER } from './connect.action';
+import { USER_LOGGEDIN, LOGIN_USER,GET_CURRENT_USER, LOGOUT_USER, USER_UPDATED, UPDATE_USER, CREATE_USER } from './connect.action';
 
 import APIClient from '../api/APIClient'
 
@@ -10,6 +10,10 @@ export const initialState = {
     loaded: false,
     error: undefined,
     phone: undefined,
+    firstname : undefined,
+    lastname : undefined,
+    email : undefined,
+    profile : undefined,
 };
 
 export function connectReducer(state = initialState, action) {
@@ -18,6 +22,16 @@ export function connectReducer(state = initialState, action) {
             return {
                 ...state,
                 connectivity: action.connectivity
+            }
+        }
+        case GET_CURRENT_USER: {
+            return {
+                ...state,
+                phone: action.phone,
+                firstname : action.firstname,
+                lastname : action.lastname,
+                email : action.email,
+                profile : action.profile,
             }
         }
         case USER_LOGGEDIN: {
@@ -40,10 +54,32 @@ export function connectReducer(state = initialState, action) {
             return {
                 ...state,
                 token: undefined,
-                contacts: []
+                loading: false,
+                loaded: false,
+                error: undefined,
+                phone: undefined,
+            }
+        }
+        case USER_UPDATED: {
+            return {
+                ...state,
+                error : action.message,
+                loading : false,
+                loaded : true,
+                firstname : action.firstname,
+                lastname : action.lastname,
+                email : action.email,
+                profile : action.profile,
+            }
+        }
+        case UPDATE_USER: {
+            return {
+                ...state,
+                loading: true,
+                loaded : false,
             }
         }
         default :
-        return state;
+            return state;
     }
 };
