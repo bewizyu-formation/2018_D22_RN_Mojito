@@ -6,11 +6,13 @@ import { Provider } from 'react-redux';
 import {createLogger} from 'redux-logger';
 import thunk from 'redux-thunk';
 
-import {easycallReducer} from './src/store/easycall.reducer';
+import {connectReducer} from './src/store/connect.reducer';
+import {contactReducer} from './src/store/contact.reducer';
 
 // Assemblage des différents reducers d'une application
 const reducers = combineReducers({
-  easycall: easycallReducer,
+  connect: connectReducer,
+  contact: contactReducer,
 });
 const logger = createLogger({
   level: 'log',

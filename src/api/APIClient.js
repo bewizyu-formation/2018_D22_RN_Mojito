@@ -12,7 +12,7 @@ export default class APIClient {
         }),
       })
       .then(response => response.json())
-      .then(responseJSON => responseJSON.token)
+      .then(responseJSON => responseJSON)
       .catch();
   }
 

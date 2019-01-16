@@ -4,7 +4,7 @@ import { AppContainer } from '../screen/StackNavigator';
 
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types'
-import { updateConnectivity } from '../store/easycall.action';
+import { updateConnectivity } from '../store/connect.action';
 
 export class ConnectContainer extends Component {
   constructor(props) {
@@ -40,7 +40,7 @@ ConnectContainer.propTypes = {
   updateConnectivity: PropTypes.func.isRequired,
 }
 const mapStateToProps = state => ({
-  connectivity: state.easycall.connectivity,
+  connectivity: state.connect.connectivity,
 });
 const mapDispatchToProps = dispatch => ({
   updateConnectivity: connectivity => dispatch(updateConnectivity(connectivity)),
