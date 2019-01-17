@@ -95,7 +95,7 @@ export class DetailScreen extends Component {
       let image = { uri: gravatar };
       imageUser = <Image style={ styles.imageStyleGravatar } source= { image }/>
     }else{
-      imageUser= <Image style={ styles.imageStyleNoGravatar } source= {require('../assets/user-icon.png')}/>
+      imageUser= <Image style={ styles.imageStyleNoGravatar } source= {require('../../assets/user-icon.png')}/>
     }
     console.log('id contact : ',_id);
     
@@ -123,7 +123,7 @@ export class DetailScreen extends Component {
               }
             }
             }>
-          <Image style={styles.imageStyle} source={require('../assets/trash-icon.png')}/>
+          <Image style={styles.imageStyle} source={require('../../assets/trash-icon.png')}/>
 
           </TouchableOpacity>
           <TouchableOpacity>
@@ -139,7 +139,7 @@ export class DetailScreen extends Component {
             isEmergencyUser: isEmergencyUser,
             id: _id
           })}>
-            <Image style={styles.imageStyle} source={require('../assets/edit-icon.png')}/>
+            <Image style={styles.imageStyle} source={require('../../assets/edit-icon.png')}/>
           </TouchableOpacity>
         </View>
         <View style={[styles.container, styles.backgroundGeneral]}>
@@ -152,13 +152,13 @@ export class DetailScreen extends Component {
         <View style={styles.footerIcons}>
           <View style={styles.iconSpacing}>
           <TouchableOpacity onPress={() => Linking.openURL(`sms:${phone}`)}>
-            <Image style={ styles.imageStyleBottom} source={require('../assets/sms-icon.png')}/>
+            <Image style={ styles.imageStyleBottom} source={require('../../assets/sms-icon.png')}/>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => Linking.openURL(`mailto:${email}`)} title="email test">
-            <Image style={ styles.imageStyleBottom} source={require('../assets/email-icon.png')}/>
+            <Image style={ styles.imageStyleBottom} source={require('../../assets/email-icon.png')}/>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => Linking.openURL(`tel:${phone}`)}>
-            <Image style={ styles.imageStyleBottom} source={require('../assets/phone-icon.png')}/>
+            <Image style={ styles.imageStyleBottom} source={require('../../assets/phone-icon.png')}/>
           </TouchableOpacity>
           </View>
         </View>
