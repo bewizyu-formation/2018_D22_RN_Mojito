@@ -4,6 +4,8 @@ import {
 } from 'react-native';
 import ContactItem from '../component/ContactItem';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { loadContacts } from '../store/contact.action';
 
 const styles = StyleSheet.create({
     container: {
@@ -17,7 +19,7 @@ const styles = StyleSheet.create({
     },
 });
 
-export default class ContactsScreen extends Component {
+class ContactsScreen extends Component {
     static navigationOptions =({navigation})=> ({
         headerTitle: 'Contacts',
         headerRight:(
@@ -106,6 +108,14 @@ export default class ContactsScreen extends Component {
         //filtrage sur le profil
     }
 
+    componentDidMount(){
+        if(this.props.connectivity){
+            this.props.loadContacts(this.props.token);
+        } else {
+            alert("Pas de connexion internet");
+        }
+    }
+
     render() {
         return (
             <View>
@@ -138,8 +148,8 @@ export default class ContactsScreen extends Component {
                 </View>
                 <FlatList
                     style={styles.backgroundGeneral}
-                    data={this.state.data}
-                    // keyExtractor={(item, index) => 'key' + index}
+                    data={this.props.contacts}
+                    keyExtractor={(item) => item._id}
                     renderItem={({ item }) => (
                         <TouchableOpacity onPress={() => this.onPressContact(item)}>
                             <ContactItem gravatar={item.gravatar} firstName={item.firstName} lastName={item.lastName} />
@@ -155,5 +165,19 @@ export default class ContactsScreen extends Component {
 ContactsScreen.propTypes = {
     navigation: PropTypes.shape({
         navigate: PropTypes.func.isRequired
-    })
+    }),
+    connectivity: PropTypes.bool.isRequired,
+    token: PropTypes.string.isRequired,
 };
+const mapStateToProps = state => ({
+    connectivity: state.connect.connectivity,
+    token: state.connect.token,
+    contacts: state.contact.contacts,
+  });
+  const mapDispatchToProps = dispatch => ({
+    loadContacts: token => dispatch(loadContacts(token)),
+  });
+  export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+  )(ContactsScreen);
