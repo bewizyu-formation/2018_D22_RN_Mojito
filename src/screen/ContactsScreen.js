@@ -5,7 +5,8 @@ import {
 import ContactItem from '../component/ContactItem';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { loadContacts } from '../store/contact.action';
+import { logoutUser } from '../store/connect.action';
+import { loadContacts, deleteAllContact, loadProfiles } from '../store/contact.action';
 
 const styles = StyleSheet.create({
     container: {
@@ -23,7 +24,13 @@ class ContactsScreen extends Component {
     static navigationOptions =({navigation})=> ({
         headerTitle: 'Contacts',
         headerRight:(
-             <TouchableOpacity onPress={() => navigation.navigate('CreateContact')}>
+             <TouchableOpacity onPress={() =>{
+                 if(this.props.connectivity){ 
+                    navigation.navigate('CreateContact');
+                 } else {
+                     alert("Pas de connexion internet");
+                 }
+                 }}>
                 <Text>ADD</Text>
             </TouchableOpacity>
       )
@@ -31,66 +38,8 @@ class ContactsScreen extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            data: [
-                {
-                    phone: '0606060606',
-                    firstName: 'Hubert',
-                    lastName: 'Bonisseur de la batte',
-                    email: 'test1@SpeechGrammarList.com',
-                    profile: 'FAMILLE',
-                    gravatar: 'https://www.gravatar.com/avatar/ad014a4630fad95df1e5a61809e49cf2',
-                    isEmergencyUser : false
-                },
-                {
-                    phone: '0606060606',
-                    firstName: 'test2',
-                    lastName: 'test2',
-                    email: 'test2@SpeechGrammarList.com',
-                    profile: 'FAMILLE',
-                    gravatar: 'https://www.gravatar.com/avatar/ad014a4630fad95df1e5a61809e49cf2',
-                    isEmergencyUser: false
-                },
-                {
-                    phone: '0606060606',
-                    firstName: 'test3',
-                    lastName: 'test3',
-                    email: 'test3@SpeechGrammarList.com',
-                    profile: 'MEDECIN',
-                    gravatar: 'https://www.gravatar.com/avatar/ad014a4630fad95df1e5a61809e49cf2',
-                    isEmergencyUser: false
-                },
-                {
-                    phone: '0606060606',
-                    firstName: 'test4',
-                    lastName: 'test4',
-                    email: 'test4@SpeechGrammarList.com',
-                    profile: 'FAMILLE',
-                    gravatar: 'https://www.gravatar.com/avatar/ad014a4630fad95df1e5a61809e49cf2',
-                    isEmergencyUser: false
-                },
-                {
-                    phone: '0606060606',
-                    firstName: 'test5',
-                    lastName: 'test5',
-                    email: 'test5@SpeechGrammarList.com',
-                    profile: 'SENIOR',
-                    gravatar: 'https://www.gravatar.com/avatar/ad014a4630fad95df1e5a61809e49cf2',
-                    isEmergencyUser: true
-                },
-                {
-                    phone: '0606060606',
-                    firstName: 'Hubert',
-                    lastName: 'Bonisseur de la batte',
-                    email: 'test1@SpeechGrammarList.com',
-                    profile: 'FAMILLE',
-                    gravatar: 'https://www.gravatar.com/avatar/ad014a4630fad95df1e5a61809e49cf2',
-                    isEmergencyUser: true
-                },
-            ],
-        };
+        
         this.onPressContact = this.onPressContact.bind(this);
-        this.onPressProfile = this.onPressProfile.bind(this);
     }
 
     onPressContact = (item) => {
@@ -104,51 +53,77 @@ class ContactsScreen extends Component {
         });
     }
 
-    onPressProfile = (event) => {
-        //filtrage sur le profil
-    }
-
     componentDidMount(){
         if(this.props.connectivity){
-            this.props.loadContacts(this.props.token);
-        } else {
-            alert("Pas de connexion internet");
-        }
+            this.props.loadContacts(this.props.token)
+            .then(()=>{
+                if(this.props.contactsError !== undefined){
+                    alert("Votre session a expiré");
+                    this.props.logoutUser();
+                    this.props.deleteAllContact();
+                    this.props.navigation.navigate('Login');
+                } else {
+                    this.props.loadProfiles();
+                }
+            });
+            
+            } else {
+                alert("Pas de connexion internet");
+            }
     }
 
     render() {
+        let contacts = this.props.contacts;
+        if(this.props.navigation.getParam('filteredContacts') !== undefined){
+            contacts = this.props.navigation.getParam('filteredContacts');
+        }
         return (
             <View>
                 <View style={styles.container}>
                     <Button
-                        onPress={this.onPressProfile}
+                        onPress={() =>{
+                            const filteredContacts = this.props.contacts;
+                            this.props.navigation.navigate('Contacts', { filteredContacts });
+                        }}
                         title="TOUS"
                         color='#FF6C00'
                     />
                     <Button
-                        onPress={this.onPressProfile}
+                        onPress={() =>{
+                            const filteredContacts = this.props.contacts.filter(item => item.profile === "FAMILLE");
+                            this.props.navigation.navigate('Contacts', { filteredContacts });
+                        }}
                         title="FAMILLE"
                         color='#FF6C00'
                     />
                     <Button
-                        onPress={this.onPressProfile}
+                        onPress={() =>{
+                            const filteredContacts = this.props.contacts.filter(item => item.profile === "SENIOR");
+                            this.props.navigation.navigate('Contacts', { filteredContacts });
+                        }}
                         title="SENIOR"
                         color='#FF6C00'
                     />
                     <Button
-                        onPress={this.onPressProfile}
+                        onPress={() =>{
+                            const filteredContacts = this.props.contacts.filter(item => item.profile === "MEDECIN");
+                            this.props.navigation.navigate('Contacts', { filteredContacts });
+                        }}
                         title="MEDECIN"
                         color='#FF6C00'
                     />
                     <Button
-                        onPress={this.onPressProfile}
+                        onPress={() =>{
+                            const filteredContacts = this.props.contacts.filter(item => item.isEmergencyUser === true);
+                            this.props.navigation.navigate('Contacts', { filteredContacts });
+                        }}
                         title="URGENT"
                         color='#FF6C00'
                     />
                 </View>
                 <FlatList
                     style={styles.backgroundGeneral}
-                    data={this.props.contacts}
+                    data={contacts}
                     keyExtractor={(item) => item._id}
                     renderItem={({ item }) => (
                         <TouchableOpacity onPress={() => this.onPressContact(item)}>
@@ -168,14 +143,23 @@ ContactsScreen.propTypes = {
     }),
     connectivity: PropTypes.bool.isRequired,
     token: PropTypes.string.isRequired,
+    contactsError: PropTypes.string,
+    loadContacts: PropTypes.func.isRequired,
+    loadProfiles: PropTypes.func.isRequired,
+    deleteAllContact: PropTypes.func.isRequired,
+    logoutUser: PropTypes.func.isRequired,
 };
 const mapStateToProps = state => ({
     connectivity: state.connect.connectivity,
     token: state.connect.token,
     contacts: state.contact.contacts,
+    contactsError: state.contact.contactsError,
   });
   const mapDispatchToProps = dispatch => ({
     loadContacts: token => dispatch(loadContacts(token)),
+    logoutUser: () => dispatch(logoutUser()),
+    deleteAllContact: () => dispatch(deleteAllContact()),
+    loadProfiles: () => dispatch(loadProfiles()), 
   });
   export default connect(
     mapStateToProps,

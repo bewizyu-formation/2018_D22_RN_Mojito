@@ -1,7 +1,7 @@
 import {
   PROFILES_LOADED, LOAD_PROFILES, CONTACTS_LOADED, LOAD_CONTACTS,
   CONTACT_ADDED, ADD_CONTACT, CONTACT_DELETED, DELETE_CONTACT,
-  CONTACT_UPDATED, UPDATE_CONTACT,
+  CONTACT_UPDATED, UPDATE_CONTACT, DELETE_ALL_CONTACT
 } from './contact.action';
 
 export const initialState = {
@@ -117,6 +117,19 @@ export function contactReducer(state = initialState, action) {
         loading: true,
         loaded: false,
       };
+    }
+    case DELETE_ALL_CONTACT: {
+      return {
+        ...state,
+        loading: false,
+        loaded: false,
+        contacts: [],
+        profiles: [],
+        contactsError: undefined,
+        addingError: undefined,
+        deleteError: undefined,
+        updateError: undefined,
+      }
     }
     default:
       return state;
