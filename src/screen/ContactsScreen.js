@@ -68,7 +68,9 @@ class ContactsScreen extends Component {
         phone: item.phone,
         email: item.email,
         gravatar: item.gravatar,
+        profile: item.profile,
         isEmergencyUser: item.isEmergencyUser,
+        id: item._id,
       });
     }
 
