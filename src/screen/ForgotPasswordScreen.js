@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Text, TextInput, View, Dimensions, StyleSheet, TouchableHighlight, KeyboardAvoidingView, ScrollView
+  Text, TextInput, View, Dimensions, StyleSheet, TouchableHighlight
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -45,6 +45,13 @@ const styles = StyleSheet.create({
 
 });
 export class ForgotPasswordScreen extends Component {
+  static navigationOptions = {
+    title: 'Mot de passe oublié',
+    headerTitleStyle: {
+      textAlign: 'center',
+      alignSelf: 'center',
+    },
+  };
   constructor(props) {
     super(props);
     this.state = {
@@ -54,9 +61,7 @@ export class ForgotPasswordScreen extends Component {
 
   render() {
     return (
-      <ScrollView>
-        <View style={styles.buttonContainer}>
-        <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
+        <View style={styles.container}>
           <Text style={styles.text}>Numéro de téléphone</Text>
           <TextInput
             style={styles.textInput}
@@ -71,7 +76,15 @@ export class ForgotPasswordScreen extends Component {
                   if (this.state.phone.length !== 10) {
                     alert('Numéro de téléphone invalide');
                   }else{
-                    
+                    this.props.forgotPassword(this.state.phone)
+                    .then(() => {
+                      if (this.props.forgotError === undefined) {
+                        alert('Votre mot de passe à bien été envoyé');
+                        this.props.navigation.navigate('Login');
+                      } else {
+                        alert('Numéro de téléphone non valide');
+                      }
+                    });
                   }
                 } else {
                   alert('Pas de connexion internet');
@@ -79,13 +92,9 @@ export class ForgotPasswordScreen extends Component {
               }}
               style={styles.primaryButton}
             >
-
               <Text style={styles.textPrimaryButton}>Renvoyer le mot de passe</Text>
-
             </TouchableHighlight>
-          </KeyboardAvoidingView>
         </View>
-      </ScrollView>
     );
   }
 }
