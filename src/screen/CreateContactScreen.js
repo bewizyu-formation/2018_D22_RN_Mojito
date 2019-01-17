@@ -103,8 +103,24 @@ class CreateContactScreen extends Component {
     }
 
     componentDidMount() {
-      if (this.props.connectivity) {
+      /* if (this.props.connectivity) {
         this.props.loadProfiles();
+      } else {
+        alert('Pas de connexion internet');
+      } */
+
+      if (this.props.connectivity) {
+        this.props.loadContacts(this.props.token)
+          .then(() => {
+            if (this.props.contactsError !== undefined) {
+              alert('Votre session a expiré');
+              this.props.logoutUser();
+              this.props.deleteAllContact();
+              this.props.navigation.navigate('Login');
+            } else {
+              this.props.loadProfiles();
+            }
+          });
       } else {
         alert('Pas de connexion internet');
       }
@@ -255,7 +271,7 @@ class CreateContactScreen extends Component {
               )
                 : (
                   <TouchableOpacity onPress={this.onSelectProfile}>
-                    <Text style={styles.textInput}>
+                    <Text style={styles.pickerTextIOS}>
                       {this.state.profile}
                     </Text>
                   </TouchableOpacity>
@@ -293,7 +309,6 @@ class CreateContactScreen extends Component {
                     if (this.state.lastname !== '' && this.state.phone !== '' && !this.state.invalidPhone
                                         && this.state.email !== '' && !this.state.invalidEmail) {
                       this.props.addContact(
-                        this.props.token,
                         this.state.phone,
                         this.state.firstName,
                         this.state.lastname,
@@ -334,18 +349,40 @@ CreateContactScreen.propTypes = {
   connectivity: PropTypes.bool.isRequired,
   token: PropTypes.string.isRequired,
   loadProfiles: PropTypes.func.isRequired,
+  loadContacts: PropTypes.func.isRequired,
+  addContact: PropTypes.func.isRequired,
+  profiles: PropTypes.arrayOf(PropTypes.string).isRequired,
+  contactsError: PropTypes.string,
+  deleteAllContact: PropTypes.func.isRequired,
+  logoutUser: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
   connectivity: state.connect.connectivity,
   token: state.connect.token,
   profiles: state.contact.profiles,
+  contactsError: state.contact.contactsError,
 });
 const mapDispatchToProps = dispatch => ({
   loadProfiles: () => dispatch(loadProfiles()),
-  addContact: (token, phone, firstName, lastName, email, profile,
-    gravatar, isFamilinkUser, isEmergencyUser) => dispatch(addContact(token, phone, firstName, lastName, email, profile,
-    gravatar, isFamilinkUser, isEmergencyUser)),
+  addContact: (
+    phone,
+    firstName,
+    lastName, email,
+    profile,
+    gravatar,
+    isFamilinkUser,
+    isEmergencyUser,
+  ) => dispatch(addContact(
+    phone,
+    firstName,
+    lastName,
+    email,
+    profile,
+    gravatar,
+    isFamilinkUser,
+    isEmergencyUser,
+  )),
 });
 export default connect(
   mapStateToProps,
