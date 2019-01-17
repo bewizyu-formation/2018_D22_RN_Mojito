@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Platform,
+  Platform, ActionSheetIOS, TouchableOpacity,
   Text, TextInput, View, Picker, StyleSheet, 
   TouchableHighlight, KeyboardAvoidingView,
 } from 'react-native';
@@ -14,6 +14,9 @@ const workingOS = Platform.select({
   ios: 'iOS',
   android: 'android',
 });
+
+const phoneLength = 10;
+const passwordLength = 4;
 
 const styles = StyleSheet.create({
   container: {
@@ -34,15 +37,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     margin: 5,
   },
-  pickerIosListItemContainer: {
-    flex: 1,
-    height: 60,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  pickerIosListItemText: {
-    fontSize: 16,
-  },
   picker: {
     flex: 1,
     width: 250,
@@ -50,6 +44,12 @@ const styles = StyleSheet.create({
     color: '#FF6C00',
 
     justifyContent: 'center',
+  },
+  pickerTextIOS: {
+    marginTop: 5,
+    color: '#FF6C00',
+    fontWeight: 'bold',
+    fontSize: 20,
   },
   logo: {
     width: 150,
@@ -105,14 +105,19 @@ class CreateAccountScreen extends Component {
 
     this.state = {
       phone: '',
+      isPhoneLenghtCorrect: false,
       password: '',
+      isPasswordLenghtCorrect: false,
       confirmedPassword: '',
       firstname: '',
       lastname: '',
       email: '',
       profile: 'FAMILLE',
+      isPasswordConfirmed: false,
     };
-
+    this.onSelectProfile = this.onSelectProfile.bind(this);
+    this.handlePhoneInput = this.handlePhoneInput.bind(this);
+    this.handlePasswordInput = this.handlePasswordInput.bind(this);
   }
 
   componentWillMount() {
@@ -121,6 +126,35 @@ class CreateAccountScreen extends Component {
 
   componentDidUpdate() {
     console.log(this.state);
+  }
+
+  onSelectProfile() {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: this.props.profiles,
+      },
+      (buttonIndex) => {
+        this.setState({ profile: this.props.profiles[buttonIndex] });
+      },
+    );
+  }
+
+  handlePhoneInput(text) {
+    if (text.length <= phoneLength) {
+      this.setState({
+        phone: text,
+        isPhoneLenghtCorrect: (text.length === phoneLength) ? true : false,
+      })
+    }
+  }
+
+  handlePasswordInput(text) {
+    if (text.length <= passwordLength) {
+      this.setState({
+        password: text,
+        isPasswordLenghtCorrect: (text.length === passwordLength) ? true : false,
+      })
+    }
   }
 
   render() {
@@ -133,14 +167,14 @@ class CreateAccountScreen extends Component {
             placeholder="Entrez votre numéro de téléphone"
             keyboardType="phone-pad"
             value={this.state.phone}
-            onChangeText={text => this.setState({ phone: text })}
+            onChangeText={text => this.handlePhoneInput(text)}
           />
-          <Text style={styles.text}>Mot de passe</Text>
+          <Text style={styles.text}>Mot de passe ({passwordLength} caractères)</Text>
           <TextInput
             style={styles.textInput}
             placeholder="Entrez votre mot de passe"
             value={this.state.password}
-            onChangeText={text => this.setState({ password: text })}
+            onChangeText={text => this.handlePasswordInput(text)}
           />
           <Text style={styles.text}>Confirmer mot de passe</Text>
           <TextInput
@@ -170,14 +204,14 @@ class CreateAccountScreen extends Component {
             value={this.state.email}
             onChangeText={text => this.setState({ email: text })}
           />
-          <Text style={styles.text}>Profile</Text>
+          <Text style={styles.text}>Quel est votre profile ?</Text>
           {
             (workingOS === "iOS") ? (
-              <Picker selectedValue = {this.state.profile} onValueChange = {value => this.setState({profile: value})}>
-               <Picker.Item label = 'FAMILLE' value = 'FAMILLE' />
-               <Picker.Item label = 'SENIOR' value = 'SENIOR' />
-               <Picker.Item label = 'MEDECIN' value = 'MEDECIN' />
-              </Picker>
+              <TouchableOpacity onPress={this.onSelectProfile}>
+                  <Text style={styles.pickerTextIOS}>
+                    {this.state.profile}
+                  </Text>
+              </TouchableOpacity>
             ) : (
               <Picker selectedValue = {this.state.profile} style={styles.picker}
                 mode='dropdown'
