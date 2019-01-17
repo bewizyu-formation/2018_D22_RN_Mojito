@@ -109,6 +109,7 @@ class CreateAccountScreen extends Component {
       password: '',
       isPasswordLenghtCorrect: false,
       confirmedPassword: '',
+      isPasswordConfirmed: false,
       firstname: '',
       lastname: '',
       email: '',
@@ -153,6 +154,16 @@ class CreateAccountScreen extends Component {
       this.setState({
         password: text,
         isPasswordLenghtCorrect: (text.length === passwordLength) ? true : false,
+        isPasswordConfirmed: (text === this.state.confirmedPassword && text.length === passwordLength) ? true : false,
+      })
+    }
+  }
+
+  handleConfirmedPasswordInput(text) {
+    if (text.length <= passwordLength) {
+      this.setState({
+        confirmedPassword: text,
+        isPasswordConfirmed: (text === this.state.password) ? true : false,
       })
     }
   }
@@ -181,7 +192,7 @@ class CreateAccountScreen extends Component {
             style={styles.textInput}
             placeholder="Confirmez votre mot de passe"
             value={this.state.confirmedPassword}
-            onChangeText={text => this.setState({ confirmedPassword: text })}
+            onChangeText={text => this.handleConfirmedPasswordInput(text)}
           />
           <Text style={styles.text}>Prénom</Text>
           <TextInput
@@ -225,7 +236,6 @@ class CreateAccountScreen extends Component {
             )
           }
           
-
           <View style={styles.buttonContainer}>
             <TouchableHighlight
               onPress={() => {
@@ -252,6 +262,9 @@ CreateAccountScreen.propTypes = {
   }),
   connectivity: PropTypes.bool.isRequired,
   createError: PropTypes.string,
+  profiles: PropTypes.array.isRequired,
+  createUser: PropTypes.func.isRequired,
+  loadProfiles: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -263,6 +276,7 @@ const mapDispatchToProps = dispatch => ({
   createUser: (phone, password, firstname, lastname, email, profile) => dispatch(createUser(phone, password, firstname, lastname, email, profile)),
   loadProfiles: () => dispatch(loadProfiles()),
 });
+
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
