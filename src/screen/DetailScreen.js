@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Text, View, TouchableOpacity, Image, StyleSheet, Linking } from 'react-native';
-import { deleteContact } from '../store/contact.action';
+import { deleteContact, deleteAllContact } from '../store/contact.action';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { logoutUser } from '../store/connect.action';
 
 const styles = StyleSheet.create({
   container: {
@@ -45,9 +46,17 @@ const styles = StyleSheet.create({
     width: 48,
     marginTop: 50
   },
-  imageStyleGravatar:{
+  imageStyleNoGravatar:{
     height: 200,
     width: 200
+  },
+  imageStyleGravatar:{
+    alignItems:'center',
+    justifyContent:'center',
+    width: 180,
+    height: 180,
+    borderRadius:100,
+    marginTop: 20
   },
   imageStyleBottom:{
     height: 80,
@@ -63,6 +72,12 @@ export class DetailScreen extends Component {
     super(props);
   }
 
+  disconnectUser(){
+    this.props.logoutUser();
+    this.props.deleteAllContact();
+    this.props.navigation.navigate('Login');
+  }
+
   render() {
     const { navigation } = this.props;
     const firstName = navigation.getParam('firstName', 'Un prénom');
@@ -70,7 +85,20 @@ export class DetailScreen extends Component {
     const phone = navigation.getParam('phone', 'Un numéro');
     const email = navigation.getParam('email', 'Un email');
     const profile = navigation.getParam('profile', 'Un groupe');
-    const _id = navigation.getParam('_id','un id');
+    const _id = navigation.getParam('id','un id');
+    const gravatar = navigation.getParam('gravatar',null);
+    const isEmergencyUser = navigation.getParam('isEmergencyUser',false);
+
+    let imageUser = '';
+
+    if(gravatar !== null){
+      let image = { uri: gravatar };
+      imageUser = <Image style={ styles.imageStyleGravatar } source= { image }/>
+    }else{
+      imageUser= <Image style={ styles.imageStyleNoGravatar } source= {require('../assets/user-icon.png')}/>
+    }
+    console.log('id contact : ',_id);
+    
     return (
       <View style={[{flex:1}, styles.backgroundGeneral]}>
         <View style={[styles.iconAlignement]}>
@@ -78,16 +106,28 @@ export class DetailScreen extends Component {
           onPress={
             () => 
               {if (this.props.connectivity) {
-                this.props.deleteContact(this.props.token, _id) 
+                this.props.deleteContact(this.props.token, _id)
+                .then(
+                  () => {
+                    if (this.props.deleteError !== undefined) {
+                      alert('Votre session a expiré');
+                      this.disconnectUser();
+                    }else{
+                      navigation.navigate('Contacts');
+                    }
+                  }
+                ) 
               }else{
                 alert('Vous n\'êtes pas connecté à Internet')
+                this.disconnectUser();
               }
             }
             }>
-            <Image style={styles.imageStyle} source={require('../assets/trash-icon.png')}/>
+          <Image style={styles.imageStyle} source={require('../assets/trash-icon.png')}/>
+
           </TouchableOpacity>
           <TouchableOpacity>
-            <Image style={styles.imageStyleGravatar} source={require('../assets/user-icon.png')}/>
+            {imageUser}
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('CreateContact', {
             firstName: firstName,
@@ -96,7 +136,8 @@ export class DetailScreen extends Component {
             email: email,
             gravatar: gravatar,
             profile: profile,
-            isEmergencyUser: isEmergencyUser
+            isEmergencyUser: isEmergencyUser,
+            id: _id
           })}>
             <Image style={styles.imageStyle} source={require('../assets/edit-icon.png')}/>
           </TouchableOpacity>
@@ -127,17 +168,26 @@ export class DetailScreen extends Component {
 }
 
 DetailScreen.propTypes = {
-  deleteContact: PropTypes.func.isRequired
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+  connectivity: PropTypes.bool.isRequired,
+  token: PropTypes.string.isRequired,
+  deleteContact: PropTypes.func.isRequired,
+  deleteAllContact: PropTypes.func.isRequired,
+  logoutUser: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = state => ({
   connectivity: state.connect.connectivity,
-  token: state.connect.token
+  token: state.connect.token,
+  deleteError: state.connect.deleteError
 });
 
 const mapDispatchToProps = dispatch => ({
-  deleteContact: title => dispatch(deleteContact(this.props.token, _id)),
-  loadFormations: () => dispatch(loadFormations()),
+  deleteContact: (token, _id) => dispatch(deleteContact(token, _id)),
+  logoutUser: () => dispatch(logoutUser()),
+  deleteAllContact: () => dispatch(deleteAllContact()),
   })
 
 export default connect(

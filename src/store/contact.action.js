@@ -87,7 +87,7 @@ export function contactDeleted(data, idContact) {
 export function deleteContact(token, idContact) {
   return (dispatch) => {
     dispatch({ type: DELETE_CONTACT });
-    return APIClient.deleteContacts(token, idContact)
+    return APIClient.deleteContact(token, idContact)
       .then(data => dispatch(contactDeleted(data, idContact)))
       .catch();
   };
