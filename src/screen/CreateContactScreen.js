@@ -16,6 +16,8 @@ import {
   Switch,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { connect } from 'react-redux';
+import { loadProfiles } from '../store/contact.action';
 
 
 const styles = StyleSheet.create({
@@ -65,9 +67,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const FEEDBACK_CATEGORIES = ['Famille', 'Senior', 'Médecin'];
+//const FEEDBACK_CATEGORIES = ['Famille', 'Senior', 'Médecin'];
 
-export default class CreateContactScreen extends Component {
+class CreateContactScreen extends Component {
     static navigationOptions = {
       title: 'Créer un contact',
       headerTitleStyle: {
@@ -89,21 +91,36 @@ export default class CreateContactScreen extends Component {
         email: '',
         invalidEmail: false,
         gravatar: '',
-        profil: 'famille',
+        profile: 'famille',
+        profiles: ['famille', 'senior', 'medecin'],
         emergency: false,
       };
-      this.onSelectProfil = this.onSelectProfil.bind(this);
+      this.onSelectprofile = this.onSelectprofile.bind(this);
     }
 
-    onSelectProfil() {
+    componentWillMount(){
+        
+        this.props.loadProfiles.then(alert("profiles chargés"));
+        //this.setState({profiles:this.props.loadProfiles})
+    }
+
+    onSelectprofile() {
       ActionSheetIOS.showActionSheetWithOptions(
         {
-          options: FEEDBACK_CATEGORIES,
+          options: this.state.profiles,
         },
         (buttonIndex) => {
-          this.setState({ profil: FEEDBACK_CATEGORIES[buttonIndex] });
+          this.setState({ profile: this.state.profiles[buttonIndex] });
         },
       );
+    }
+
+    pickerChange(index){
+        this.state.profiles.map( (v,i) => {
+            if (index === i){
+                this.setState({profile: this.state.profiles[index]})
+            }
+        })
     }
 
 
@@ -218,21 +235,20 @@ export default class CreateContactScreen extends Component {
             <Text style={styles.text}>Profil</Text>
             {Platform.OS === 'android' ? (
               <Picker
-                selectedValue={this.state.profil}
+                selectedValue={this.state.profile}
                 prompt="Profil du contact"
                 mode="dropdown"
                 style={{ height: 40, width: 250 }}
-                onValueChange={itemValue => this.setState({ profil: itemValue })}
-              >
-                <Picker.Item label="Famille" color="#FF6C00" value="famille" />
-                <Picker.Item label="Senior" color="#FF6C00" value="senior" />
-                <Picker.Item label="Médecin" color="#FF6C00" value="médecin" />
+                onValueChange={(itemValue, itemIndex) => this.pickerChange(itemIndex)}>{
+                    this.state.profiles.map( (v)=>{
+                        return <Picker.Item key={v} color='#FF6C00' label={v} value={v} />})
+                    }
               </Picker>
             )
               : (
-                <TouchableOpacity onPress={this.onSelectProfil}>
+                <TouchableOpacity onPress={this.onSelectprofile}>
                   <Text style={styles.textInput}>
-                    {this.state.profil}
+                    {this.state.profile}
                   </Text>
                 </TouchableOpacity>
               )
@@ -280,3 +296,14 @@ CreateContactScreen.propTypes = {
     navigate: PropTypes.func.isRequired,
   }).isRequired,
 };
+
+const mapStateToProps = state => ({
+    connectivity: state.connect.connectivity
+  });
+  const mapDispatchToProps = dispatch => ({
+    loadProfiles: () => dispatch(loadProfiles),
+  });
+  export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+  )(CreateContactScreen);
