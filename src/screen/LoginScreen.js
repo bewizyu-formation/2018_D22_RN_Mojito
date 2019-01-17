@@ -84,8 +84,6 @@ class LoginScreen extends Component {
       password: '',
     };
 
-    this.onPhoneChange = this.onPhoneChange.bind(this);
-    this.onPasswordChange = this.onPasswordChange.bind(this);
   }
 
   render() {
