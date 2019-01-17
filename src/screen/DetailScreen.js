@@ -27,7 +27,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 40,
     marginBottom: 30,
   },
   footerIcons:{
@@ -42,27 +41,26 @@ const styles = StyleSheet.create({
     marginRight: 30
   },
   imageStyle:{
-    marginTop: 50,
     height: 48,
-    width: 48
+    width: 48,
+    marginTop: 50
+  },
+  imageStyleGravatar:{
+    height: 200,
+    width: 200
   },
   imageStyleBottom:{
     height: 80,
     width: 80
   }
 });
-//retirer l'export par defaut
-export default class DetailScreen extends Component {
+export class DetailScreen extends Component {
   static navigationOptions =({navigation})=> ({
     headerTitle: 'Détails',
   });
 
   constructor(props) {
     super(props);
-  }
-
-  onPressDelete = () => {
-    this.props.deleteContact(/* ajouter token et idcontact */);
   }
 
   render() {
@@ -72,23 +70,33 @@ export default class DetailScreen extends Component {
     const phone = navigation.getParam('phone', 'Un numéro');
     const email = navigation.getParam('email', 'Un email');
     const profile = navigation.getParam('profile', 'Un groupe');
+    const _id = navigation.getParam('_id','un id');
     return (
       <View style={[{flex:1}, styles.backgroundGeneral]}>
         <View style={[styles.iconAlignement]}>
-        <TouchableOpacity onPress={() => this.onPressDelete }>
+        <TouchableOpacity 
+          onPress={
+            () => 
+              {if (this.props.connectivity) {
+                this.props.deleteContact(this.props.token, _id) 
+              }else{
+                alert('Vous n\'êtes pas connecté à Internet')
+              }
+            }
+            }>
             <Image style={styles.imageStyle} source={require('../assets/trash-icon.png')}/>
           </TouchableOpacity>
           <TouchableOpacity>
-            <Image source={require('../assets/user-icon.png')}/>
+            <Image style={styles.imageStyleGravatar} source={require('../assets/user-icon.png')}/>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('CreateContact', {
-            firstName: item.firstName,
-            lastName: item.lastName,
-            phone: item.phone,
-            email: item.email,
-            gravatar: item.gravatar,
-            profile: item.profile,
-            isEmergencyUser: item.isEmergencyUser
+            firstName: firstName,
+            lastName: lastName,
+            phone: phone,
+            email: email,
+            gravatar: gravatar,
+            profile: profile,
+            isEmergencyUser: isEmergencyUser
           })}>
             <Image style={styles.imageStyle} source={require('../assets/edit-icon.png')}/>
           </TouchableOpacity>
@@ -122,17 +130,17 @@ DetailScreen.propTypes = {
   deleteContact: PropTypes.func.isRequired
 }
 
-/*const mapStateToProps = state => ({
-  contact: state.contact.,
-  loading: state.formations.loading,
+const mapStateToProps = state => ({
+  connectivity: state.connect.connectivity,
+  token: state.connect.token
 });
 
 const mapDispatchToProps = dispatch => ({
-  deleteContact: title => dispatch(deleteContact(/*token idcontact)),
+  deleteContact: title => dispatch(deleteContact(this.props.token, _id)),
   loadFormations: () => dispatch(loadFormations()),
   })
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(DetailScreen)*/
+)(DetailScreen)
