@@ -17,6 +17,7 @@ const workingOS = Platform.select({
 
 const phoneLength = 10;
 const passwordLength = 4;
+const emailRegEx = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ ;
 
 const styles = StyleSheet.create({
   container: {
@@ -113,6 +114,7 @@ class CreateAccountScreen extends Component {
       firstname: '',
       lastname: '',
       email: '',
+      isEmailValid: false,
       profile: 'FAMILLE',
       isPasswordConfirmed: false,
     };
@@ -126,7 +128,8 @@ class CreateAccountScreen extends Component {
   }
 
   componentDidUpdate() {
-    console.log(this.state);
+    console.log(this.state.isPhoneLenghtCorrect, this.state.isPasswordLenghtCorrect,
+      this.state.isPasswordConfirmed, this.state.isEmailValid);
   }
 
   onSelectProfile() {
@@ -163,8 +166,36 @@ class CreateAccountScreen extends Component {
     if (text.length <= passwordLength) {
       this.setState({
         confirmedPassword: text,
-        isPasswordConfirmed: (text === this.state.password) ? true : false,
+        isPasswordConfirmed: (text.length === passwordLength && text === this.state.password) ? true : false,
       })
+    }
+  }
+
+  handleEmailInput(text) {
+    this.setState({
+      email: text,
+      isEmailValid: emailRegEx.test(text),
+    })
+  }
+
+  handleAccountCreation() {
+    if (this.props.connectivity) {
+      if (this.state.isPhoneLenghtCorrect && this.state.isPasswordLenghtCorrect &&
+          this.state.isPasswordConfirmed && this.state.isEmailValid) {
+        this.props.createUser(this.state.phone, this.state.password, this.state.firstname,
+          this.state.lastname, this.state.email, this.state.profile)
+          .then(() => {
+            if (this.props.createError === undefined) {
+              this.props.navigation.navigate('Login');
+            } else {
+              alert('Ce numéro de téléphone est déjà associé à un compte utilisateur.');
+            }
+          });
+      } else {
+        alert("Merci de renseigner tous les champs pour finaliser l'inscription.");
+      }
+    } else {
+      alert('Pas de connexion internet.');
     }
   }
 
@@ -172,7 +203,8 @@ class CreateAccountScreen extends Component {
     return (
       <ScrollView>
         <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-          <Text style={styles.text}>Numéro de téléphone</Text>
+          <Text style={(this.state.isPhoneLenghtCorrect) ?
+             ({...styles.text, color:'green'}) : (styles.text)}>Numéro de téléphone</Text>
           <TextInput
             style={styles.textInput}
             placeholder="Entrez votre numéro de téléphone"
@@ -180,19 +212,23 @@ class CreateAccountScreen extends Component {
             value={this.state.phone}
             onChangeText={text => this.handlePhoneInput(text)}
           />
-          <Text style={styles.text}>Mot de passe ({passwordLength} caractères)</Text>
+          <Text style={(this.state.isPasswordLenghtCorrect) ?
+             ({...styles.text, color:'green'}) : (styles.text)}>Mot de passe ({passwordLength} caractères)</Text>
           <TextInput
             style={styles.textInput}
             placeholder="Entrez votre mot de passe"
             value={this.state.password}
             onChangeText={text => this.handlePasswordInput(text)}
+            secureTextEntry={true} 
           />
-          <Text style={styles.text}>Confirmer mot de passe</Text>
+          <Text style={(this.state.isPasswordConfirmed) ?
+             ({...styles.text, color:'green'}) : (styles.text)}>Confirmer mot de passe</Text>
           <TextInput
             style={styles.textInput}
             placeholder="Confirmez votre mot de passe"
             value={this.state.confirmedPassword}
             onChangeText={text => this.handleConfirmedPasswordInput(text)}
+            secureTextEntry={true} 
           />
           <Text style={styles.text}>Prénom</Text>
           <TextInput
@@ -208,12 +244,13 @@ class CreateAccountScreen extends Component {
             value={this.state.lastname}
             onChangeText={text => this.setState({ lastname: text })}
           />
-          <Text style={styles.text}>Email</Text>
+          <Text style={(this.state.isEmailValid) ?
+             ({...styles.text, color:'green'}) : (styles.text)}>Email</Text>
           <TextInput
             style={styles.textInput}
             placeholder="Entrez votre email"
             value={this.state.email}
-            onChangeText={text => this.setState({ email: text })}
+            onChangeText={text => this.handleEmailInput(text)}
           />
           <Text style={styles.text}>Quel est votre profile ?</Text>
           {
@@ -238,9 +275,7 @@ class CreateAccountScreen extends Component {
           
           <View style={styles.buttonContainer}>
             <TouchableHighlight
-              onPress={() => {
-                this.props.navigation.navigate('LoginAccount');
-              }}
+              onPress={() => {this.handleAccountCreation()}}
               style={styles.primaryButton}
             >
 
@@ -269,7 +304,7 @@ CreateAccountScreen.propTypes = {
 
 const mapStateToProps = state => ({
   connectivity: state.connect.connectivity,
-  createError: state.connect.loginError,
+  createError: state.connect.createError,
   profiles: state.contact.profiles,
 });
 const mapDispatchToProps = dispatch => ({
