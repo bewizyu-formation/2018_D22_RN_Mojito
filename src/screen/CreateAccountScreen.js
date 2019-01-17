@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
   Platform, ActionSheetIOS, TouchableOpacity,
-  Text, TextInput, View, Picker, StyleSheet, 
+  Text, TextInput, View, Picker, StyleSheet,
   TouchableHighlight, KeyboardAvoidingView,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -17,7 +17,7 @@ const workingOS = Platform.select({
 
 const phoneLength = 10;
 const passwordLength = 4;
-const emailRegEx = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ ;
+const emailRegEx = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 const styles = StyleSheet.create({
   container: {
@@ -26,9 +26,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FECB98',
     padding: 10,
-  },
-  link: {
-    color: '#FF6C00',
   },
   textInput: {
     width: 250,
@@ -52,12 +49,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 20,
   },
-  logo: {
-    width: 150,
-    height: 150,
-    margin: 30,
-    marginBottom: 10,
-  },
   text: {
     fontSize: 20,
   },
@@ -68,24 +59,11 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     margin: 5,
   },
-  textSecondaryButton: {
-    fontWeight: 'bold',
-    fontSize: 20,
-    textAlign: 'center',
-    color: '#000000',
-    margin: 5,
-  },
   primaryButton: {
     margin: 5,
     width: 250,
     height: 40,
     backgroundColor: '#FF6C00',
-  },
-  secondaryButton: {
-    margin: 5,
-    width: 250,
-    height: 40,
-    backgroundColor: '#FFFFFF',
   },
   buttonContainer: {
     margin: 20,
@@ -116,7 +94,6 @@ class CreateAccountScreen extends Component {
       email: '',
       isEmailValid: false,
       profile: 'FAMILLE',
-      isPasswordConfirmed: false,
     };
     this.onSelectProfile = this.onSelectProfile.bind(this);
     this.handlePhoneInput = this.handlePhoneInput.bind(this);
@@ -125,11 +102,6 @@ class CreateAccountScreen extends Component {
 
   componentWillMount() {
     this.props.loadProfiles();
-  }
-
-  componentDidUpdate() {
-    console.log(this.state.isPhoneLenghtCorrect, this.state.isPasswordLenghtCorrect,
-      this.state.isPasswordConfirmed, this.state.isEmailValid);
   }
 
   onSelectProfile() {
@@ -147,8 +119,8 @@ class CreateAccountScreen extends Component {
     if (text.length <= phoneLength) {
       this.setState({
         phone: text,
-        isPhoneLenghtCorrect: (text.length === phoneLength) ? true : false,
-      })
+        isPhoneLenghtCorrect: (text.length === phoneLength),
+      });
     }
   }
 
@@ -156,9 +128,10 @@ class CreateAccountScreen extends Component {
     if (text.length <= passwordLength) {
       this.setState({
         password: text,
-        isPasswordLenghtCorrect: (text.length === passwordLength) ? true : false,
-        isPasswordConfirmed: (text === this.state.confirmedPassword && text.length === passwordLength) ? true : false,
-      })
+        isPasswordLenghtCorrect: (text.length === passwordLength),
+        isPasswordConfirmed: !!((text === this.state.confirmedPassword
+          && text.length === passwordLength)),
+      });
     }
   }
 
@@ -166,8 +139,8 @@ class CreateAccountScreen extends Component {
     if (text.length <= passwordLength) {
       this.setState({
         confirmedPassword: text,
-        isPasswordConfirmed: (text.length === passwordLength && text === this.state.password) ? true : false,
-      })
+        isPasswordConfirmed: !!((text.length === passwordLength && text === this.state.password)),
+      });
     }
   }
 
@@ -175,13 +148,13 @@ class CreateAccountScreen extends Component {
     this.setState({
       email: text,
       isEmailValid: emailRegEx.test(text),
-    })
+    });
   }
 
   handleAccountCreation() {
     if (this.props.connectivity) {
-      if (this.state.isPhoneLenghtCorrect && this.state.isPasswordLenghtCorrect &&
-          this.state.isPasswordConfirmed && this.state.isEmailValid) {
+      if (this.state.isPhoneLenghtCorrect && this.state.isPasswordLenghtCorrect
+          && this.state.isPasswordConfirmed && this.state.isEmailValid) {
         this.props.createUser(this.state.phone, this.state.password, this.state.firstname,
           this.state.lastname, this.state.email, this.state.profile)
           .then(() => {
@@ -203,8 +176,11 @@ class CreateAccountScreen extends Component {
     return (
       <ScrollView>
         <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-          <Text style={(this.state.isPhoneLenghtCorrect) ?
-             ({...styles.text, color:'green'}) : (styles.text)}>Numéro de téléphone</Text>
+          <Text style={(this.state.isPhoneLenghtCorrect)
+            ? ({ ...styles.text, color: 'green' }) : (styles.text)}
+          >
+Numéro de téléphone
+          </Text>
           <TextInput
             style={styles.textInput}
             placeholder="Entrez votre numéro de téléphone"
@@ -212,23 +188,32 @@ class CreateAccountScreen extends Component {
             value={this.state.phone}
             onChangeText={text => this.handlePhoneInput(text)}
           />
-          <Text style={(this.state.isPasswordLenghtCorrect) ?
-             ({...styles.text, color:'green'}) : (styles.text)}>Mot de passe ({passwordLength} caractères)</Text>
+          <Text style={(this.state.isPasswordLenghtCorrect)
+            ? ({ ...styles.text, color: 'green' }) : (styles.text)}
+          >
+Mot de passe (
+            {passwordLength}
+            {' '}
+caractères)
+          </Text>
           <TextInput
             style={styles.textInput}
             placeholder="Entrez votre mot de passe"
             value={this.state.password}
             onChangeText={text => this.handlePasswordInput(text)}
-            secureTextEntry={true} 
+            secureTextEntry
           />
-          <Text style={(this.state.isPasswordConfirmed) ?
-             ({...styles.text, color:'green'}) : (styles.text)}>Confirmer mot de passe</Text>
+          <Text style={(this.state.isPasswordConfirmed)
+            ? ({ ...styles.text, color: 'green' }) : (styles.text)}
+          >
+Confirmer mot de passe
+          </Text>
           <TextInput
             style={styles.textInput}
             placeholder="Confirmez votre mot de passe"
             value={this.state.confirmedPassword}
             onChangeText={text => this.handleConfirmedPasswordInput(text)}
-            secureTextEntry={true} 
+            secureTextEntry
           />
           <Text style={styles.text}>Prénom</Text>
           <TextInput
@@ -244,8 +229,11 @@ class CreateAccountScreen extends Component {
             value={this.state.lastname}
             onChangeText={text => this.setState({ lastname: text })}
           />
-          <Text style={(this.state.isEmailValid) ?
-             ({...styles.text, color:'green'}) : (styles.text)}>Email</Text>
+          <Text style={(this.state.isEmailValid)
+            ? ({ ...styles.text, color: 'green' }) : (styles.text)}
+          >
+Email
+          </Text>
           <TextInput
             style={styles.textInput}
             placeholder="Entrez votre email"
@@ -254,28 +242,31 @@ class CreateAccountScreen extends Component {
           />
           <Text style={styles.text}>Quel est votre profile ?</Text>
           {
-            (workingOS === "iOS") ? (
+            (workingOS === 'iOS') ? (
               <TouchableOpacity onPress={this.onSelectProfile}>
-                  <Text style={styles.pickerTextIOS}>
-                    {this.state.profile}
-                  </Text>
+                <Text style={styles.pickerTextIOS}>
+                  {this.state.profile}
+                </Text>
               </TouchableOpacity>
             ) : (
-              <Picker selectedValue = {this.state.profile} style={styles.picker}
-                mode='dropdown'
-                onValueChange={(itemValue, itemIndex) => this.setState({profile: itemValue})}>
+              <Picker
+                selectedValue={this.state.profile}
+                style={styles.picker}
+                mode="dropdown"
+                onValueChange={itemValue => this.setState({ profile: itemValue })}
+              >
                 {
-                  this.props.profiles.map( (v, index)=>{
-                    return <Picker.Item key={index} label={v} value={v} />
-                  })
+                  this.props.profiles.map(
+                    v => <Picker.Item key={v} label={v} value={v} />,
+                  )
                 }
               </Picker>
             )
           }
-          
+
           <View style={styles.buttonContainer}>
             <TouchableHighlight
-              onPress={() => {this.handleAccountCreation()}}
+              onPress={() => { this.handleAccountCreation(); }}
               style={styles.primaryButton}
             >
 
@@ -297,7 +288,7 @@ CreateAccountScreen.propTypes = {
   }),
   connectivity: PropTypes.bool.isRequired,
   createError: PropTypes.string,
-  profiles: PropTypes.array.isRequired,
+  profiles: PropTypes.arrayOf(PropTypes.string).isRequired,
   createUser: PropTypes.func.isRequired,
   loadProfiles: PropTypes.func.isRequired,
 };
@@ -308,7 +299,9 @@ const mapStateToProps = state => ({
   profiles: state.contact.profiles,
 });
 const mapDispatchToProps = dispatch => ({
-  createUser: (phone, password, firstname, lastname, email, profile) => dispatch(createUser(phone, password, firstname, lastname, email, profile)),
+  createUser: (phone, password, firstname, lastname, email, profile) => dispatch(
+    createUser(phone, password, firstname, lastname, email, profile),
+  ),
   loadProfiles: () => dispatch(loadProfiles()),
 });
 
