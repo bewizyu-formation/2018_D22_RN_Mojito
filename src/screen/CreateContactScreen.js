@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Platform, Alert, TextInput, Text, View, KeyboardAvoidingView, TouchableHighlight, StyleSheet, Image, Picker, Switch } from 'react-native';
+import { ActionSheetIOS, Platform, Alert, TextInput, Text, View, KeyboardAvoidingView, TouchableHighlight, TouchableOpacity,StyleSheet, Image, Picker, Switch } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
 
@@ -67,6 +67,7 @@ const styles = StyleSheet.create({
     },
   });
 
+const FEEDBACK_CATEGORIES = ['Famille', 'Senior', 'Médecin']; 
 
 export default class CreateContactScreen extends Component {
 
@@ -93,6 +94,16 @@ export default class CreateContactScreen extends Component {
         profil: 'famille',
         emergency: false
     }
+  }
+
+  onSelectCategory() {
+    ActionSheetIOS.showActionSheetWithOptions(
+    { 
+        options: FEEDBACK_CATEGORIES
+  },
+  (buttonIndex) => {this.setState({ profil: FEEDBACK_CATEGORIES[buttonIndex] })
+    
+  });
   }
 
 
@@ -209,9 +220,16 @@ export default class CreateContactScreen extends Component {
             <Picker.Item label='Senior' color='#FF6C00' value='senior' />
             <Picker.Item label='Médecin' color='#FF6C00' value='médecin' />
         </Picker>
-        ):(
-            null
-        )}
+        ):   
+        (
+            <TouchableOpacity onPress={this.onSelectCategory.bind(this)}>
+                <Text style={styles.textInput}>
+                    {this.state.profil}
+                </Text>
+            </TouchableOpacity>
+        )
+     
+        }
         
 
         <View style={{flexDirection:'row'}}>
