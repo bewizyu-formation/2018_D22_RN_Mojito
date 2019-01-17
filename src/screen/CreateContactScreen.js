@@ -91,12 +91,13 @@ export default class CreateContactScreen extends Component {
         invalidPhone: false,
         email: '',
         invalidEmail: false,
+        gravatar: '',
         profil: 'famille',
         emergency: false
     }
   }
 
-  onSelectCategory() {
+  onSelectProfil() {
     ActionSheetIOS.showActionSheetWithOptions(
     { 
         options: FEEDBACK_CATEGORIES
@@ -119,7 +120,12 @@ export default class CreateContactScreen extends Component {
         <TextInput
           style={styles.textInput}
           placeholder='Nom du contact'
-          onChangeText={(value) => this.setState({lastname: value})}
+          value={this.state.lastname}
+          onChangeText={(value) => {
+              this.setState({lastname: value});
+              
+            }
+        }
           onBlur={() => {
             if(this.state.lastname.length === 0){
                 this.setState({lastnameEmpty: true});
@@ -139,6 +145,7 @@ export default class CreateContactScreen extends Component {
         <TextInput
           style={styles.textInput}
           placeholder='Prénom du contact'
+          value={this.state.firstname}
           onChangeText={(value) => this.setState({firstname: value})}
           onBlur={() => {
             if(this.state.firstname.length === 0){
@@ -161,6 +168,7 @@ export default class CreateContactScreen extends Component {
           style={styles.textInput}
           placeholder='Numéro de téléphone du contact'
           keyboardType='phone-pad'
+          value={this.state.phone}
           onChangeText={(value) => this.setState({phone: value})}
         onBlur={() => {
             if(this.state.phone.length !== 10){
@@ -182,6 +190,7 @@ export default class CreateContactScreen extends Component {
           style={styles.textInput}
           placeholder='Adresse mail du contact'
           keyboardType='email-address'
+          value={this.state.email}
           onChangeText={(value) => this.setState({email: value})}
           onBlur={() => {
             let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ ;
@@ -206,6 +215,9 @@ export default class CreateContactScreen extends Component {
         <TextInput
           style={styles.textInput}
           placeholder="URL de l'avatar du contact"
+          value={this.state.gravatar}
+          onChangeText={(value) => this.setState({gravatar: value})}
+
         />
 
         <Text style={styles.text}>Profil</Text>
@@ -222,7 +234,7 @@ export default class CreateContactScreen extends Component {
         </Picker>
         ):   
         (
-            <TouchableOpacity onPress={this.onSelectCategory.bind(this)}>
+            <TouchableOpacity onPress={this.onSelectProfil.bind(this)}>
                 <Text style={styles.textInput}>
                     {this.state.profil}
                 </Text>
@@ -246,8 +258,7 @@ export default class CreateContactScreen extends Component {
           <TouchableHighlight
             onPress={() => {
 
-                if(this.state.lastname !== '' && this.state.firstname !== '' 
-                    && this.state.phone !== '' && !this.state.invalidPhone 
+                if(this.state.lastname !== '' && this.state.phone !== '' && !this.state.invalidPhone 
                     && this.state.email !== '' && !this.state.invalidEmail){
                     this.props.navigation.navigate('Contacts');
                 } else {
