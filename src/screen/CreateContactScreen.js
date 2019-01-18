@@ -310,7 +310,7 @@ class CreateContactScreen extends Component {
                       this.state.emergency,
                     ).then(() => {
                       if (this.props.addingError !== undefined) {
-                        Alert.alert('Votre session a expiré');
+                        Alert.alert('Votre session a expirée');
                         this.props.logoutUser();
                         this.props.deleteAllContact();
                         this.props.navigation.navigate('Login');
