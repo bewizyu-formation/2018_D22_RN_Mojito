@@ -3,11 +3,13 @@ import {
   View, Button, StyleSheet, TouchableOpacity, FlatList, Text,
 } from 'react-native';
 import PropTypes from 'prop-types';
+import { BackHandler } from "react-native";
 import { connect } from 'react-redux';
 import ContactItem from '../component/ContactItem';
+import AddButton from '../component/AddButton';
 import { logoutUser } from '../store/connect.action';
 import { loadContacts, deleteAllContact, loadProfiles } from '../store/contact.action';
-
+import MenuButton from '../component/MenuButton';
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#FF6C00',
@@ -21,26 +23,22 @@ const styles = StyleSheet.create({
 });
 
 class ContactsScreen extends Component {
-    static navigationOptions =({ navigation }) => ({
+    _didFocusSubscription;
+    _willBlurSubscription;
+
+    static navigationOptions =({navigation}) => ({
       headerTitle: 'Contacts',
-      headerRight: (
-        <TouchableOpacity onPress={() => {
-          if (this.props.connectivity) {
-            navigation.navigate('CreateContact');
-          } else {
-            alert('Pas de connexion internet');
-          }
-        }}
-        >
-          <Text>ADD</Text>
-        </TouchableOpacity>
-      ),
+      headerRight: <AddButton navigation={navigation} />,
+      headerLeft: <MenuButton navigation={navigation} />,
     });
 
     constructor(props) {
       super(props);
-
+      this._didFocusSubscription = props.navigation.addListener('didFocus', payload =>
+      BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+    );
       this.onPressContact = this.onPressContact.bind(this);
+      this.onBackButtonPressAndroid = this.onBackButtonPressAndroid.bind(this);
     }
 
     componentDidMount() {
@@ -59,6 +57,24 @@ class ContactsScreen extends Component {
       } else {
         alert('Pas de connexion internet');
       }
+      this._willBlurSubscription = this.props.navigation.addListener('willBlur', payload =>
+      BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+    );
+    }
+    onBackButtonPressAndroid = () => {
+        return true;
+      };
+    onAddPress(){
+        console.log(this.props.connectivity);
+        if (this.props.connectivity) {
+          navigation.navigate('CreateContact');
+        } else {
+          alert('Pas de connexion internet');
+        }
+    }
+    componentWillUnmount() {
+        this._didFocusSubscription && this._didFocusSubscription.remove();
+        this._willBlurSubscription && this._willBlurSubscription.remove();
     }
 
     onPressContact = (item) => {
