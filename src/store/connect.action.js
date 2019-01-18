@@ -57,7 +57,7 @@ export function loginUser(phone, password) {
 
 export function logoutUser() {
   return {
-    type: LOGIN_USER,
+    type: LOGOUT_USER,
   };
 }
 
