@@ -5,6 +5,7 @@ import CreateAccountScreen from './CreateAccountScreen';
 import ContactsScreen from './ContactsScreen';
 import CreateContactScreen from './CreateContactScreen';
 import ForgotPasswordScreen from './ForgotPasswordScreen';
+import MenuScreen from './MenuScreen';
 
 const AppNavigator = createStackNavigator(
   {
@@ -14,6 +15,7 @@ const AppNavigator = createStackNavigator(
     Detail: DetailScreen,
     CreateContact: CreateContactScreen,
     ForgotPassword: ForgotPasswordScreen,
+    Menu: MenuScreen,
   },
   {
     initialRouteName: 'Login',
