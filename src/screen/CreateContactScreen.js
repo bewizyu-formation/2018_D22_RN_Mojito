@@ -310,10 +310,15 @@ class CreateContactScreen extends Component {
                       this.state.emergency,
                     ).then(() => {
                       if (this.props.addingError !== undefined) {
-                        Alert.alert('Votre session a expirée');
-                        this.props.logoutUser();
-                        this.props.deleteAllContact();
-                        this.props.navigation.navigate('Login');
+                        if(this.props.addingError === 'Security token invalid or expired'){
+                          Alert.alert('Votre session a expirée');
+                          this.props.logoutUser();
+                          this.props.deleteAllContact();
+                          this.props.navigation.navigate('Login');
+                        }else {
+                          Alert.alert('Erreur lors de la création',this.props.addingError);
+                        }
+                        
                       } else {
                         this.props.navigation.navigate('Contacts');
                       }
