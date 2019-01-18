@@ -24,7 +24,15 @@
         "react/jsx-filename-extension": "off",
         "react-native/no-unused-styles": "error",
         "react-native/no-inline-styles": "error",
-        "react-native/no-color-literals": "error",
+        "react-native/no-color-literals": "off",
+        "react/destructuring-assignment": "off",
+        "no-useless-escape": "off",
+        "no-underscore-dangle": "off",
+        "global-require": "off",
+        "array-callback-return": "off",
+        "react/prefer-stateless-function": "off", 
+        "no-nested-ternary":  "off",
+        "react/require-default-props": "off",
         "import/no-extraneous-dependencies": ["error",{"devDependencies": true}]
     }
 }

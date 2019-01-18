@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Text, TextInput, View, Image, StyleSheet, TouchableHighlight, KeyboardAvoidingView,
+  Text, TextInput, View, Image, StyleSheet,
+  TouchableHighlight, KeyboardAvoidingView, Alert,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
 import { loginUser } from '../store/connect.action';
 
+const phoneLength = 10;
+const passwordLength = 4;
 
 const styles = StyleSheet.create({
   container: {
@@ -80,10 +83,27 @@ class LoginScreen extends Component {
     super(props);
 
     this.state = {
-      phone: '',
-      password: '',
+      phone: '0600000002',
+      password: '0000',
     };
+    this.handlePasswordInput = this.handlePasswordInput.bind(this);
+    this.handlePhoneInput = this.handlePhoneInput.bind(this);
+  }
 
+  handlePhoneInput(text) {
+    if (text.length <= phoneLength) {
+      this.setState({
+        phone: text,
+      });
+    }
+  }
+
+  handlePasswordInput(text) {
+    if (text.length <= passwordLength) {
+      this.setState({
+        password: text,
+      });
+    }
   }
 
   render() {
@@ -100,14 +120,15 @@ class LoginScreen extends Component {
             placeholder="Entrer votre numéro de téléphone"
             keyboardType="phone-pad"
             value={this.state.phone}
-            onChangeText={text => this.setState({ phone: text })}
+            onChangeText={text => this.handlePhoneInput(text)}
           />
           <Text style={styles.text}>Mot de passe</Text>
           <TextInput
             style={styles.textInput}
             placeholder="Entrer votre mot de passe"
             value={this.state.password}
-            onChangeText={text => this.setState({ password: text })}
+            secureTextEntry
+            onChangeText={text => this.handlePasswordInput(text)}
           />
           <Text
             style={styles.link}
@@ -123,21 +144,21 @@ class LoginScreen extends Component {
               onPress={() => {
                 if (this.props.connectivity) {
                   if (this.state.phone.length !== 10) {
-                    alert('Numéro de téléphone invalide');
+                    Alert.alert('Erreur de saisie', 'Numéro de téléphone invalide');
                   } else if (this.state.password === '') {
-                    alert('Mot de passe requis');
+                    Alert.alert('Champs vide', 'Mot de passe requis');
                   } else {
                     this.props.loginUser(this.state.phone, this.state.password)
                       .then(() => {
                         if (this.props.loginError === undefined) {
                           this.props.navigation.navigate('Contacts');
                         } else {
-                          alert('Mot de passe ou numéro de téléphone non valide');
+                          Alert.alert('Erreur de saisie', 'Mot de passe ou numéro de téléphone non valide');
                         }
                       });
                   }
                 } else {
-                  alert('Pas de connexion internet');
+                  Alert.alert('Attention', 'Pas de connexion internet');
                 }
               }}
               style={styles.primaryButton}

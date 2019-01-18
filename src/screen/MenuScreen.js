@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import {Platform, ActionSheetIOS, Text, View, StyleSheet, Alert,
+import {
+  Platform, ActionSheetIOS, Text, View, StyleSheet, Alert,
   ScrollView, KeyboardAvoidingView,
-  TextInput, TouchableOpacity,TouchableHighlight, Picker } from 'react-native';
+  TextInput, TouchableOpacity, TouchableHighlight, Picker,
+} from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { updateUser,logoutUser } from '../store/connect.action';
+import { updateUser, logoutUser } from '../store/connect.action';
 import { deleteAllContact } from '../store/contact.action';
 
 const workingOS = Platform.select({
@@ -47,6 +49,10 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 20,
   },
+  textGreen: {
+    color: 'green',
+    fontSize: 20,
+  },
   textPrimaryButton: {
     fontWeight: 'bold',
     fontSize: 20,
@@ -56,17 +62,41 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     margin: 5,
-    width: 250,
+    width: 252,
     height: 40,
     backgroundColor: '#FF6C00',
   },
+  logoutButton: {
+    margin: 5,
+    width: 252,
+    height: 40,
+    backgroundColor: 'red',
+  },
   buttonContainer: {
-    margin: 20,
+    margin: 10,
+  },
+  editingButton: {
+    width: 125,
+    height: 40,
+    backgroundColor: '#FF6C00',
+    margin: 1,
+  },
+  editingContainer: {
+    flexDirection: 'row',
+    margin: 10,
   },
 });
 
 
 export class MenuScreen extends Component {
+  static navigationOptions = () => ({
+    title: 'Mon Compte',
+    headerTitleStyle: {
+      textAlign: 'center',
+      alignSelf: 'center',
+    },
+  });
+
   constructor(props) {
     super(props);
 
@@ -78,12 +108,14 @@ export class MenuScreen extends Component {
       profile: this.props.profile,
       isEditable: false,
     };
+
     this.onSelectProfile = this.onSelectProfile.bind(this);
     this.handleFirstNameInput = this.handleFirstNameInput.bind(this);
     this.handleLastNameInput = this.handleLastNameInput.bind(this);
     this.handleEmailInput = this.handleEmailInput.bind(this);
     this.onEditPress = this.onEditPress.bind(this);
-    this.onDisconnectPress = this.onDisconnectPress.bind(this); 
+    this.onDisconnectPress = this.onDisconnectPress.bind(this);
+    this.handleAccountUpdate = this.handleAccountUpdate.bind(this);
   }
 
 
@@ -96,6 +128,31 @@ export class MenuScreen extends Component {
         this.setState({ profile: this.props.profiles[buttonIndex] });
       },
     );
+  }
+
+  onEditPress() {
+    if (!this.state.isEditable) {
+      this.setState({ isEditable: true });
+    } else {
+      this.handleAccountUpdate();
+    }
+  }
+
+  onCancelPress() {
+    this.setState({
+      firstname: this.props.firstname,
+      lastname: this.props.lastname,
+      email: this.props.email,
+      isEmailValid: true,
+      profile: this.props.profile,
+      isEditable: false,
+    });
+  }
+
+  onDisconnectPress() {
+    this.props.logoutUser();
+    this.props.deleteAllContact();
+    this.props.navigation.navigate('Login');
   }
 
   handleFirstNameInput(text) {
@@ -117,28 +174,21 @@ export class MenuScreen extends Component {
     });
   }
 
-  onEditPress() {
-    if (!this.state.isEditable) {
-      this.setState({ isEditable: true });
-    } else {
-      this.handleAccountUpdate();
-    }
-  }
-
-  onDisconnectPress(){
-    this.props.logoutUser();
-    this.props.deleteAllContact();
-    this.props.navigation.navigate('Login');
-  }
-
   handleAccountUpdate() {
     if (this.props.connectivity) {
-      if (this.state.isEmailValid) {
+      if (this.state.isEmailValid
+        && this.state.firstname.length >= 4
+        && this.state.lastname.length >= 4) {
         this.props.updateUser(this.props.token, this.state.firstname,
           this.state.lastname, this.state.email, this.state.profile)
           .then(() => {
             if (this.props.updateError === undefined) {
               this.setState({ isEditable: false });
+            } else if (this.props.updateError === 'Security token invalid or expired') {
+              Alert.alert('Session expirée', 'Votre session a expirée, veuillez vous reconnecter');
+              this.props.logoutUser();
+              this.props.deleteAllContact();
+              this.props.navigation.navigate('Login');
             } else {
               Alert.alert('Erreur de mise a jour du profile', 'Veuillez recommencer votre saisie.');
               this.setState({
@@ -148,7 +198,7 @@ export class MenuScreen extends Component {
                 isEmailValid: true,
                 profile: this.props.profile,
                 isEditable: false,
-              })
+              });
             }
           });
       } else {
@@ -163,12 +213,11 @@ export class MenuScreen extends Component {
     return (
       <ScrollView>
         <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-          <Text style={(this.state.isPhoneLenghtCorrect)
-            ? ({ ...styles.text, color: 'green' }) : (styles.text)}
-          >
+          <Text style={(styles.text)}>
             Numéro de téléphone
           </Text>
           <Text style={styles.text}>{this.props.phone}</Text>
+          <Text style={styles.text}>Prénom</Text>
           <TextInput
             style={styles.textInput}
             value={this.state.firstname}
@@ -183,10 +232,10 @@ export class MenuScreen extends Component {
             onChangeText={text => this.setState({ lastname: text })}
           />
           <Text style={(this.state.isEmailValid)
-            ? ({ ...styles.text, color: 'green' }) : (styles.text)}
+            ? (styles.textGreen) : (styles.text)}
           >
             Email
-        </Text>
+          </Text>
           <TextInput
             style={styles.textInput}
             value={this.state.email}
@@ -202,49 +251,76 @@ export class MenuScreen extends Component {
                   </Text>
                 </TouchableOpacity>
               ) : (
-                  <Picker
-                    selectedValue={this.state.profile}
-                    style={styles.picker}
-                    mode="dropdown"
-                    onValueChange={itemValue => this.setState({ profile: itemValue })}
-                  >
-                    {
+                <Picker
+                  selectedValue={this.state.profile}
+                  style={styles.picker}
+                  mode="dropdown"
+                  onValueChange={itemValue => this.setState({ profile: itemValue })}
+                >
+                  {
                       this.props.profiles.map(
                         v => <Picker.Item key={v} label={v} value={v} />,
                       )
                     }
-                  </Picker>
-                )
-            ) : (
-                <Text style={styles.text}>{this.state.profile}</Text>
+                </Picker>
               )
+            ) : (
+              <Text style={styles.text}>{this.state.profile}</Text>
+            )
           }
 
+
+          {
+            (this.state.isEditable) ? (
+              <View style={styles.editingContainer}>
+                <TouchableHighlight
+                  onPress={() => { this.onEditPress(); }}
+                  style={styles.editingButton}
+                >
+
+                  <Text style={styles.textPrimaryButton}>Valider</Text>
+
+                </TouchableHighlight>
+
+
+                <TouchableHighlight
+                  onPress={() => { this.onCancelPress(); }}
+                  style={styles.editingButton}
+                >
+
+                  <Text style={styles.textPrimaryButton}>Annuler</Text>
+
+                </TouchableHighlight>
+              </View>
+            ) : (
+              <View style={styles.buttonContainer}>
+                <TouchableHighlight
+                  onPress={() => { this.onEditPress(); }}
+                  style={styles.primaryButton}
+                >
+
+                  <Text style={styles.textPrimaryButton}>Modifier</Text>
+
+                </TouchableHighlight>
+              </View>
+            )
+          }
+
+
           <View style={styles.buttonContainer}>
             <TouchableHighlight
-              onPress={() => { this.onEditPress; }}
-              style={styles.primaryButton}
-            >
-
-              <Text style={styles.textPrimaryButton}>Editer</Text>
-
-            </TouchableHighlight>
-          </View>
-
-          <View style={styles.buttonContainer}>
-            <TouchableHighlight
-              onPress={() => { 
+              onPress={() => {
                 Alert.alert(
                   'Attention',
                   'Etes vous sûr de vouloir vous déconnecter ?',
                   [
-                    {text: 'NON', onPress: () => false ,sytle: 'cancel'},
-                    {text: 'OUI', onPress: () => this.onDisconnectPress()},
-                    
+                    { text: 'NON', onPress: () => false, sytle: 'cancel' },
+                    { text: 'OUI', onPress: () => this.onDisconnectPress() },
+
                   ],
-                )
-               }}
-              style={styles.primaryButton}
+                );
+              }}
+              style={styles.logoutButton}
             >
 
               <Text style={styles.textPrimaryButton}>Déconnexion</Text>
@@ -271,7 +347,9 @@ MenuScreen.propTypes = {
   email: PropTypes.string.isRequired,
   profile: PropTypes.string.isRequired,
   logoutUser: PropTypes.func.isRequired,
+  updateUser: PropTypes.func.isRequired,
   deleteAllContact: PropTypes.func.isRequired,
+  updateError: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -283,9 +361,11 @@ const mapStateToProps = state => ({
   lastname: state.connect.lastname,
   email: state.connect.email,
   profile: state.connect.profile,
+  updateError: state.connect.updateError,
 });
 const mapDispatchToProps = dispatch => ({
-  updateUser: (token, firstname, lastname, email, profile) => dispatch(updateUser(token, firstname, lastname, email, profile)),
+  updateUser: (token, firstname, lastname, email, profile) => dispatch(updateUser(token,
+    firstname, lastname, email, profile)),
   logoutUser: () => dispatch(logoutUser()),
   deleteAllContact: () => dispatch(deleteAllContact()),
 });
