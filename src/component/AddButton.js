@@ -14,13 +14,13 @@ class AddButton extends Component {
     return (
       <TouchableOpacity onPress={() => {
         if (this.props.connectivity) {
-          this.props.navigation.navigate('CreateAccount');
+          this.props.navigation.navigate('CreateContact');
         } else {
           alert('Pas de connexion internet');
         }
       }}
       >
-        <Text>ADD</Text>
+        <Text>Ajouter</Text>
       </TouchableOpacity>
     );
   }
