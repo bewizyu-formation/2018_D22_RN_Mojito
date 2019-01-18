@@ -8,9 +8,9 @@ const styles = StyleSheet.create({
   cellStyle: {
     height: 100,
     backgroundColor: '#FF6C00',
-    marginLeft: 20,
-    marginRight: 20,
-    marginBottom: 40,
+    marginLeft: 10,
+    marginRight: 10,
+    marginBottom: 10,
     marginTop: 5,
     flexDirection: 'row',
     borderWidth: 1,

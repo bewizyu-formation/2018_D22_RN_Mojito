@@ -19,6 +19,7 @@ const AppNavigator = createStackNavigator(
   },
   {
     initialRouteName: 'Login',
+    cardStyle: { backgroundColor: '#FECB98' },
   },
 );
 
