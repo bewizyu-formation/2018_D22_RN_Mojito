@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import {
-  View, Button, StyleSheet, TouchableOpacity, FlatList, Text,
+  View, StyleSheet, TouchableOpacity, FlatList, Text, Platform, BackHandler, Alert,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import { BackHandler } from "react-native";
 import { connect } from 'react-redux';
+import { SearchBar } from 'react-native-elements';
 import ContactItem from '../component/ContactItem';
 import AddButton from '../component/AddButton';
 import { logoutUser } from '../store/connect.action';
 import { loadContacts, deleteAllContact, loadProfiles } from '../store/contact.action';
 import MenuButton from '../component/MenuButton';
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#FF6C00',
@@ -17,16 +18,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
-  backgroundGeneral: {
+  footerSpaceLastContact: {
+    height: '87%',
+  },
+  textStyle: {
+    color: '#FFF',
+    marginRight: Platform.OS === 'ios' ? 8 : 12,
+    fontSize: Platform.OS === 'ios' ? 15 : 17,
+  },
+  textBackgroundActive: {
     backgroundColor: '#FECB98',
+  },
+  textBackgroundInactive: {
+    backgroundColor: '#FF6C00',
+  },
+  containerStyleSearchBar: {
+    backgroundColor: '#FFF',
   },
 });
 
 class ContactsScreen extends Component {
-    _didFocusSubscription;
-    _willBlurSubscription;
-
-    static navigationOptions =({navigation}) => ({
+    static navigationOptions =({ navigation }) => ({
       headerTitle: 'Contacts',
       headerRight: <AddButton navigation={navigation} />,
       headerLeft: <MenuButton navigation={navigation} />,
@@ -34,11 +46,17 @@ class ContactsScreen extends Component {
 
     constructor(props) {
       super(props);
-      this._didFocusSubscription = props.navigation.addListener('didFocus', payload =>
-      BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
-    );
+      this.state = {
+        activeAll: true,
+        activeFamily: false,
+        activeSenior: false,
+        activeMedical: false,
+        activeEmergency: false,
+      };
+      this._didFocusSubscription = props.navigation.addListener('didFocus', () => BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid));
       this.onPressContact = this.onPressContact.bind(this);
       this.onBackButtonPressAndroid = this.onBackButtonPressAndroid.bind(this);
+      this.onSearch = this.onSearch.bind(this);
     }
 
     componentDidMount() {
@@ -46,7 +64,7 @@ class ContactsScreen extends Component {
         this.props.loadContacts(this.props.token)
           .then(() => {
             if (this.props.contactsError !== undefined) {
-              alert('Votre session a expiré');
+              Alert.alert('Perte de session', 'Votre session a expiré');
               this.props.logoutUser();
               this.props.deleteAllContact();
               this.props.navigation.navigate('Login');
@@ -55,27 +73,17 @@ class ContactsScreen extends Component {
             }
           });
       } else {
-        alert('Pas de connexion internet');
+        Alert.alert('Connexion perdue', 'Pas de connexion internet');
       }
-      this._willBlurSubscription = this.props.navigation.addListener('willBlur', payload =>
-      BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
-    );
+      this._willBlurSubscription = this.props.navigation.addListener('willBlur', () => BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid));
     }
-    onBackButtonPressAndroid = () => {
-        return true;
-      };
-    onAddPress(){
-        console.log(this.props.connectivity);
-        if (this.props.connectivity) {
-          navigation.navigate('CreateContact');
-        } else {
-          alert('Pas de connexion internet');
-        }
-    }
+
     componentWillUnmount() {
-        this._didFocusSubscription && this._didFocusSubscription.remove();
-        this._willBlurSubscription && this._willBlurSubscription.remove();
+      this._didFocusSubscription && this._didFocusSubscription.remove();
+      this._willBlurSubscription && this._willBlurSubscription.remove();
     }
+
+    onBackButtonPressAndroid = () => true;
 
     onPressContact = (item) => {
       this.props.navigation.navigate('Detail', {
@@ -90,59 +98,140 @@ class ContactsScreen extends Component {
       });
     }
 
+    onSearch = (text) => {
+      const filteredContacts = this.props.contacts.filter(item => item.lastName.includes(text));
+      this.props.navigation.navigate('Contacts', { filteredContacts });
+    }
+
+    _didFocusSubscription;
+
+    _willBlurSubscription;
 
     render() {
       let contacts = this.props.contacts;
+      const backgroundActive = styles.textBackgroundActive;
+      const backgroundInactive = styles.textBackgroundInactive;
       if (this.props.navigation.getParam('filteredContacts') !== undefined) {
         contacts = this.props.navigation.getParam('filteredContacts');
       }
       return (
         <View>
+          <View>
+            <SearchBar
+              inputStyle={styles.containerStyleSearchBar}
+              containerStyle={styles.containerStyleSearchBar}
+              onChangeText={this.onSearch}
+              placeholder="Rechercher un contact"
+            />
+          </View>
           <View style={styles.container}>
-            <Button
+            <TouchableOpacity
               onPress={() => {
                 const filteredContacts = this.props.contacts;
                 this.props.navigation.navigate('Contacts', { filteredContacts });
+                this.setState({
+                  activeAll: true,
+                  activeFamily: false,
+                  activeSenior: false,
+                  activeMedical: false,
+                  activeEmergency: false,
+                });
               }}
-              title="TOUS"
-              color="#FF6C00"
-            />
-            <Button
+            >
+              <Text style={
+                [styles.textStyle,
+                  this.state.activeAll ? backgroundActive : backgroundInactive,
+                ]}
+              >
+                TOUS
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => {
                 const filteredContacts = this.props.contacts.filter(item => item.profile === 'FAMILLE');
                 this.props.navigation.navigate('Contacts', { filteredContacts });
+                this.setState({
+                  activeAll: false,
+                  activeFamily: true,
+                  activeSenior: false,
+                  activeMedical: false,
+                  activeEmergency: false,
+                });
               }}
-              title="FAMILLE"
-              color="#FF6C00"
-            />
-            <Button
+            >
+              <Text style={
+                [styles.textStyle,
+                  this.state.activeFamily ? backgroundActive : backgroundInactive,
+                ]}
+              >
+                FAMILLE
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => {
                 const filteredContacts = this.props.contacts.filter(item => item.profile === 'SENIOR');
                 this.props.navigation.navigate('Contacts', { filteredContacts });
+                this.setState({
+                  activeAll: false,
+                  activeFamily: false,
+                  activeSenior: true,
+                  activeMedical: false,
+                  activeEmergency: false,
+                });
               }}
-              title="SENIOR"
-              color="#FF6C00"
-            />
-            <Button
+            >
+              <Text style={
+                [styles.textStyle,
+                  this.state.activeSenior ? backgroundActive : backgroundInactive,
+                ]}
+              >
+                SENIOR
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => {
                 const filteredContacts = this.props.contacts.filter(item => item.profile === 'MEDECIN');
                 this.props.navigation.navigate('Contacts', { filteredContacts });
+                this.setState({
+                  activeAll: false,
+                  activeFamily: false,
+                  activeSenior: false,
+                  activeMedical: true,
+                  activeEmergency: false,
+                });
               }}
-              title="MEDECIN"
-              color="#FF6C00"
-            />
-            <Button
+            >
+              <Text style={
+                [styles.textStyle,
+                  this.state.activeMedical ? backgroundActive : backgroundInactive]}
+              >
+                MEDECIN
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => {
                 const filteredContacts = this.props.contacts
                   .filter(item => item.isEmergencyUser === true);
                 this.props.navigation.navigate('Contacts', { filteredContacts });
+                this.setState({
+                  activeAll: false,
+                  activeFamily: false,
+                  activeSenior: false,
+                  activeMedical: false,
+                  activeEmergency: true,
+                });
               }}
-              title="URGENT"
-              color="#FF6C00"
-            />
+            >
+              <Text style={
+                [styles.textStyle,
+                  this.state.activeEmergency ? backgroundActive : backgroundInactive]}
+              >
+                URGENT
+              </Text>
+            </TouchableOpacity>
           </View>
           <FlatList
-            style={styles.backgroundGeneral}
+            style={styles.footerSpaceLastContact}
             data={contacts}
             keyExtractor={item => item._id}
             renderItem={({ item }) => (
@@ -154,7 +243,7 @@ class ContactsScreen extends Component {
                 />
               </TouchableOpacity>
             )
-                    }
+            }
           />
         </View>
       );
