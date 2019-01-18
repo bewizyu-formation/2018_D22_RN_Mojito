@@ -17,7 +17,8 @@ import {
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
-import { addContact, loadProfiles } from '../store/contact.action';
+import { logoutUser } from '../store/connect.action';
+import { addContact, deleteAllContact,loadProfiles } from '../store/contact.action';
 
 const phoneLength = 10;
 
