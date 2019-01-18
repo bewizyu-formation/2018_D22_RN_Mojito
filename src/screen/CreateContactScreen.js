@@ -19,6 +19,8 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
 import { addContact, loadProfiles } from '../store/contact.action';
 
+const phoneLength = 10;
+
 
 const styles = StyleSheet.create({
   container: {
@@ -87,33 +89,28 @@ class CreateContactScreen extends Component {
 
       this.state = {
         lastname: '',
-        lastnameEmpty: false,
+        isLastnameEmpty: true,
         firstname: '',
-        firstnameEmpty: false,
+        isFirstnameEmpty: true,
         phone: '',
-        invalidPhone: false,
+        isValidPhone: false,
         email: '',
-        invalidEmail: false,
+        isValidEmail: false,
         gravatar: '',
         profile: 'FAMILLE',
         familinkUser: false,
         emergency: false,
       };
       this.onSelectprofile = this.onSelectProfile.bind(this);
+      this.handlePhoneInput = this.handlePhoneInput.bind(this);
     }
 
     componentDidMount() {
-      /* if (this.props.connectivity) {
-        this.props.loadProfiles();
-      } else {
-        alert('Pas de connexion internet');
-      } */
-
       if (this.props.connectivity) {
         this.props.loadContacts(this.props.token)
           .then(() => {
             if (this.props.contactsError !== undefined) {
-              alert('Votre session a expiré');
+              Alert.alert('Votre session a expiré');
               this.props.logoutUser();
               this.props.deleteAllContact();
               this.props.navigation.navigate('Login');
@@ -122,7 +119,7 @@ class CreateContactScreen extends Component {
             }
           });
       } else {
-        alert('Pas de connexion internet');
+        Alert.alert('Pas de connexion internet');
       }
     }
 
@@ -145,6 +142,15 @@ class CreateContactScreen extends Component {
       });
     }
 
+    handlePhoneInput(text) {
+      if (text.length <= phoneLength) {
+        this.setState({
+          phone: text,
+          isValidPhone: (text.length === phoneLength),
+        });
+      }
+    }
+
 
     render() {
       return (
@@ -165,13 +171,13 @@ class CreateContactScreen extends Component {
                         }
               onBlur={() => {
                 if (this.state.lastname.length === 0) {
-                  this.setState({ lastnameEmpty: true });
+                  this.setState({ isLastnameEmpty: true });
                 } else {
-                  this.setState({ lastnameEmpty: false });
+                  this.setState({ isLastnameEmpty: false });
                 }
               }}
             />
-            {this.state.lastnameEmpty ? (
+            {this.state.isLastnameEmpty ? (
               <Text style={styles.textAlert}>Le nom du contact doit être renseigné</Text>
             ) : (
               null
@@ -186,13 +192,13 @@ class CreateContactScreen extends Component {
               onChangeText={value => this.setState({ firstname: value })}
               onBlur={() => {
                 if (this.state.firstname.length === 0) {
-                  this.setState({ firstnameEmpty: true });
+                  this.setState({ isFirstnameEmpty: true });
                 } else {
-                  this.setState({ firstnameEmpty: false });
+                  this.setState({ isFirstnameEmpty: false });
                 }
               }}
             />
-            {this.state.firstnameEmpty ? (
+            {this.state.isFirstnameEmpty ? (
               <Text style={styles.textAlert}>Le prénom du contact doit être renseigné</Text>
             ) : (
               null
@@ -206,16 +212,12 @@ class CreateContactScreen extends Component {
               placeholder="Numéro de téléphone du contact"
               keyboardType="phone-pad"
               value={this.state.phone}
-              onChangeText={value => this.setState({ phone: value })}
-              onBlur={() => {
-                if (this.state.phone.length !== 10) {
-                  this.setState({ invalidPhone: true });
-                } else {
-                  this.setState({ invalidPhone: false });
-                }
-              }}
+              onChangeText={text => {
+                this.handlePhoneInput(text);
+              }
+            }
             />
-            {this.state.invalidPhone ? (
+            {this.state.isValidPhone ? (
               <Text style={styles.textAlert}>Numéro de téléphone invalide</Text>
             ) : (
               null
@@ -232,13 +234,13 @@ class CreateContactScreen extends Component {
               onBlur={() => {
                 const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
                 if (reg.test(this.state.email) === false) {
-                  this.setState({ invalidEmail: true });
+                  this.setState({ isValidEmail: true });
                 } else {
-                  this.setState({ invalidEmail: false });
+                  this.setState({ isValidEmail: false });
                 }
               }}
             />
-            {this.state.invalidEmail ? (
+            {this.state.isValidEmail ? (
               <Text style={styles.textAlert}>Le format de l'adresse mail n'est pas valide</Text>
             ) : (
               null
@@ -306,8 +308,8 @@ class CreateContactScreen extends Component {
               <TouchableHighlight
                 onPress={() => {
                   if (this.props.connectivity) {
-                    if (this.state.lastname !== '' && this.state.phone !== '' && !this.state.invalidPhone
-                                        && this.state.email !== '' && !this.state.invalidEmail) {
+                    if (this.state.lastname !== '' && this.state.phone !== '' && !this.state.isValidPhone
+                                        && this.state.email !== '' && !this.state.isValidEmail) {
                       this.props.addContact(
                         this.state.phone,
                         this.state.firstName,
@@ -318,13 +320,18 @@ class CreateContactScreen extends Component {
                         this.state.familinkUser,
                         this.state.emergency,
                       ).then(() => {
-                        this.props.navigation.navigate('Contacts');
+                        if(this.props.addingError !== undefined){
+                          Alert.alert("Un problème est survenu lors de la création du contact",this.props.createError);
+                        }else {
+                          this.props.navigation.navigate('Contacts');
+                        }
+                        
                       });
                     } else {
                       Alert.alert('Création impossible', 'Un ou plusieurs champs sont mal renseignés');
                     }
                   } else {
-                    alert('Pas de connexion internet');
+                    Alert.alert('Pas de connexion internet');
                   }
                 }}
                 style={styles.primaryButton}
@@ -355,6 +362,7 @@ CreateContactScreen.propTypes = {
   contactsError: PropTypes.string,
   deleteAllContact: PropTypes.func.isRequired,
   logoutUser: PropTypes.func.isRequired,
+  addingError: PropTypes.string
 };
 
 const mapStateToProps = state => ({
@@ -362,6 +370,7 @@ const mapStateToProps = state => ({
   token: state.connect.token,
   profiles: state.contact.profiles,
   contactsError: state.contact.contactsError,
+  addingError: state.contact.addingError
 });
 const mapDispatchToProps = dispatch => ({
   loadProfiles: () => dispatch(loadProfiles()),
