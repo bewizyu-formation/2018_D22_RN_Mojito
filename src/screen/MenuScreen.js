@@ -295,7 +295,13 @@ export class MenuScreen extends Component {
             ) : (
               <View style={styles.buttonContainer}>
                 <TouchableHighlight
-                  onPress={() => { this.onEditPress(); }}
+                  onPress={() => { 
+                    if(this.props.connectivity){
+                      this.onEditPress(); 
+                    }else{
+                      Alert.alert('Vous n\'avez pas de connection Internet');
+                    }
+                  }}
                   style={styles.primaryButton}
                 >
 

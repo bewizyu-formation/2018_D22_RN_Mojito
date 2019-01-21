@@ -180,7 +180,6 @@ export class DetailScreen extends Component {
 
 
   handleContactUpdate() {
-    if (this.props.connectivity) {
       this.setState({
         _id: this.state.firstName + this.state.lastName
         + this.state.phone + this.state.email,
@@ -212,9 +211,6 @@ export class DetailScreen extends Component {
         }
       })
         .catch();
-    } else {
-      Alert.alert('Attention', 'Pas de connexion internet');
-    }
   }
 
   pickerChange(index) {
@@ -251,24 +247,32 @@ export class DetailScreen extends Component {
                 onPress={
                   () => {
                     if (this.props.connectivity) {
-                      this.props.deleteContact(this.props.token, this.state._id)
-                        .then(
-                          () => {
-                            if (this.props.deleteError !== undefined) {
-                              if (this.props.deleteError === 'Security token invalid or expired') {
-                                Alert.alert('Attention', 'Votre session a expiré');
-                                this.disconnectUser();
+                      Alert.alert(
+                        'Attention',
+                        'Etes vous sûr de vouloir supprimer le contact ?',
+                        [
+                          { text: 'NON', onPress: () => false, sytle: 'cancel' },
+                          { text: 'OUI', onPress: () => this.props.deleteContact(this.props.token, this.state._id)
+                          .then(
+                            () => {
+                              if (this.props.deleteError !== undefined) {
+                                if (this.props.deleteError === 'Security token invalid or expired') {
+                                  Alert.alert('Attention', 'Votre session a expiré');
+                                  this.disconnectUser();
+                                } else {
+                                  Alert.alert('Erreur de suppression', this.props.deleteError);
+                                }
                               } else {
-                                Alert.alert('Erreur de suppression', this.props.deleteError);
+  
+                                this.props.navigation.navigate('Contacts');
                               }
-                            } else {
-                              this.props.navigation.navigate('Contacts');
-                            }
-                          },
-                        );
+                            },
+                          ) 
+                        },
+                        ],
+                      );
                     } else {
                       Alert.alert('Attention', 'Vous n\'êtes pas connecté à Internet');
-                      this.disconnectUser();
                     }
                   }
                 }
@@ -281,7 +285,12 @@ export class DetailScreen extends Component {
               </TouchableOpacity>
 
               <TouchableOpacity onPress={() => {
-                this.onPressEdit();
+                if(this.props.connectivity){
+                  this.onPressEdit();
+                }else{
+                  Alert.alert('Vous n\'avez pas de connection Internet');
+                }
+                
               }
                 }
               >
