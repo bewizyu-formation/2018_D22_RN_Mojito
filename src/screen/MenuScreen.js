@@ -349,7 +349,7 @@ MenuScreen.propTypes = {
   logoutUser: PropTypes.func.isRequired,
   updateUser: PropTypes.func.isRequired,
   deleteAllContact: PropTypes.func.isRequired,
-  updateError: PropTypes.string.isRequired,
+  updateError: PropTypes.string,
 };
 
 const mapStateToProps = state => ({
@@ -364,8 +364,9 @@ const mapStateToProps = state => ({
   updateError: state.connect.updateError,
 });
 const mapDispatchToProps = dispatch => ({
-  updateUser: (token, firstname, lastname, email, profile) => dispatch(updateUser(token,
-    firstname, lastname, email, profile)),
+  updateUser: (token, firstname, lastname, email, profile) => dispatch(
+    updateUser(token, firstname, lastname, email, profile),
+  ),
   logoutUser: () => dispatch(logoutUser()),
   deleteAllContact: () => dispatch(deleteAllContact()),
 });

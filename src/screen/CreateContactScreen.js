@@ -18,7 +18,7 @@ import {
 import { ScrollView } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
 import { logoutUser } from '../store/connect.action';
-import { addContact, deleteAllContact,loadProfiles } from '../store/contact.action';
+import { addContact, deleteAllContact, loadProfiles } from '../store/contact.action';
 
 const phoneLength = 10;
 
@@ -74,6 +74,13 @@ const styles = StyleSheet.create({
   buttonContainer: {
     margin: 20,
   },
+  picker: {
+    height: 40,
+    width: 250,
+  },
+  rowContainer: {
+    flexDirection: 'row',
+  },
 });
 
 class CreateContactScreen extends Component {
@@ -102,14 +109,12 @@ class CreateContactScreen extends Component {
       familinkUser: false,
       emergency: false,
     };
-    this.onSelectprofile = this.onSelectProfile.bind(this);
+    this.onSelectProfile = this.onSelectProfile.bind(this);
     this.handlePhoneInput = this.handlePhoneInput.bind(this);
   }
 
   componentDidMount() {
-
     this.props.loadProfiles();
-
   }
 
   onSelectProfile() {
@@ -169,8 +174,8 @@ class CreateContactScreen extends Component {
           {this.state.isLastnameEmpty ? (
             <Text style={styles.textAlert}>Le nom du contact doit être renseigné</Text>
           ) : (
-              null
-            )
+            null
+          )
           }
 
           <Text style={styles.text}>Prénom</Text>
@@ -190,8 +195,8 @@ class CreateContactScreen extends Component {
           {this.state.isFirstnameEmpty ? (
             <Text style={styles.textAlert}>Le prénom du contact doit être renseigné</Text>
           ) : (
-              null
-            )
+            null
+          )
           }
 
 
@@ -201,7 +206,7 @@ class CreateContactScreen extends Component {
             placeholder="Numéro de téléphone du contact"
             keyboardType="phone-pad"
             value={this.state.phone}
-            onChangeText={text => {
+            onChangeText={(text) => {
               this.handlePhoneInput(text);
             }
             }
@@ -209,8 +214,8 @@ class CreateContactScreen extends Component {
           {!this.state.isValidPhone ? (
             <Text style={styles.textAlert}>Numéro de téléphone invalide</Text>
           ) : (
-              null
-            )
+            null
+          )
           }
 
           <Text style={styles.text}>Email</Text>
@@ -232,8 +237,8 @@ class CreateContactScreen extends Component {
           {!this.state.isValidEmail ? (
             <Text style={styles.textAlert}>Le format de l'adresse mail n'est pas valide</Text>
           ) : (
-              null
-            )
+            null
+          )
           }
 
 
@@ -252,7 +257,7 @@ class CreateContactScreen extends Component {
                 selectedValue={this.state.profile}
                 prompt="Profil du contact"
                 mode="dropdown"
-                style={{ height: 40, width: 250 }}
+                style={styles.picker}
                 onValueChange={(itemValue, itemIndex) => this.pickerChange(itemIndex)}
               >
                 {
@@ -273,7 +278,7 @@ class CreateContactScreen extends Component {
             )}
 
 
-          <View style={{ flexDirection: 'row' }}>
+          <View style={styles.rowContainer}>
             <Text style={styles.text}>Utilisateur d'EasyCall ? </Text>
             <Switch
               onValueChange={value => this.setState({ familinkUser: value })}
@@ -283,7 +288,7 @@ class CreateContactScreen extends Component {
           </View>
 
 
-          <View style={{ flexDirection: 'row' }}>
+          <View style={styles.rowContainer}>
             <Text style={styles.text}>Contacter en cas d'urgence </Text>
             <Switch
               onValueChange={value => this.setState({ emergency: value })}
@@ -310,21 +315,18 @@ class CreateContactScreen extends Component {
                       this.state.familinkUser,
                       this.state.emergency,
                     ).then(() => {
-                      console.log(this.props.addingError);
                       if (this.props.addingError !== undefined) {
-                        if(this.props.addingError === 'Security token invalid or expired'){
+                        if (this.props.addingError === 'Security token invalid or expired') {
                           Alert.alert('Votre session a expirée');
                           this.props.logoutUser();
                           this.props.deleteAllContact();
                           this.props.navigation.navigate('Login');
-                        }else {
-                          Alert.alert('Erreur lors de la création',this.props.addingError);
+                        } else {
+                          Alert.alert('Erreur lors de la création', this.props.addingError);
                         }
-                        
                       } else {
                         this.props.navigation.navigate('Contacts');
                       }
-
                     });
                   } else {
                     Alert.alert('Création impossible', 'Un ou plusieurs champs sont mal renseignés');

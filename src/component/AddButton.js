@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
 import {
-  TouchableOpacity, Text, Image, StyleSheet
+  TouchableOpacity, Alert, Image, StyleSheet,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 const styles = StyleSheet.create({
-  imageStyle:{
+  imageStyle: {
     height: 48,
     width: 48,
   },
-})
+});
 
 class AddButton extends Component {
   constructor(props) {
@@ -23,11 +23,11 @@ class AddButton extends Component {
         if (this.props.connectivity) {
           this.props.navigation.navigate('CreateContact');
         } else {
-          alert('Pas de connexion internet');
+          Alert.alert('Attention', 'Pas de connexion internet');
         }
       }}
       >
-        <Image style={styles.imageStyle} source={require('../../assets/plus-icon.png')}/>
+        <Image style={styles.imageStyle} source={require('../../assets/plus-icon.png')} />
       </TouchableOpacity>
     );
   }

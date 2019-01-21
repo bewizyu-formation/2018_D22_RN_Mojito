@@ -4,11 +4,12 @@ import {
   Platform, ActionSheetIOS, TouchableOpacity,
   Text, TextInput, View, Picker, StyleSheet,
   TouchableHighlight, KeyboardAvoidingView,
+  Alert,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
-import { createUser } from '../store/connect.action';
-import { loadProfiles } from '../store/contact.action';
+import { createUser, logoutUser } from '../store/connect.action';
+import { loadProfiles, deleteAllContact } from '../store/contact.action';
 
 const workingOS = Platform.select({
   ios: 'iOS',
@@ -51,6 +52,10 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
+  },
+  textGreen: {
+    fontSize: 20,
+    color: 'green',
   },
   textPrimaryButton: {
     fontWeight: 'bold',
@@ -161,14 +166,14 @@ class CreateAccountScreen extends Component {
             if (this.props.createError === undefined) {
               this.props.navigation.navigate('Login');
             } else {
-              alert('Ce numéro de téléphone est déjà associé à un compte utilisateur.');
+              Alert.alert('Erreur de saisie', 'Ce numéro de téléphone est déjà associé à un compte utilisateur.');
             }
           });
       } else {
-        alert("Merci de renseigner tous les champs pour finaliser l'inscription.");
+        Alert.alert('Erreur de saisie', 'Merci de renseigner tous les champs pour finaliser l\'inscription.');
       }
     } else {
-      alert('Pas de connexion internet.');
+      Alert.alert('Attention', 'Pas de connexion internet.');
     }
   }
 
@@ -177,7 +182,7 @@ class CreateAccountScreen extends Component {
       <ScrollView>
         <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
           <Text style={(this.state.isPhoneLenghtCorrect)
-            ? ({ ...styles.text, color: 'green' }) : (styles.text)}
+            ? (styles.textGreen) : (styles.text)}
           >
 Numéro de téléphone
           </Text>
@@ -189,7 +194,7 @@ Numéro de téléphone
             onChangeText={text => this.handlePhoneInput(text)}
           />
           <Text style={(this.state.isPasswordLenghtCorrect)
-            ? ({ ...styles.text, color: 'green' }) : (styles.text)}
+            ? (styles.textGreen) : (styles.text)}
           >
 Mot de passe (
             {passwordLength}
@@ -204,7 +209,7 @@ caractères)
             secureTextEntry
           />
           <Text style={(this.state.isPasswordConfirmed)
-            ? ({ ...styles.text, color: 'green' }) : (styles.text)}
+            ? (styles.textGreen) : (styles.text)}
           >
 Confirmer mot de passe
           </Text>
@@ -230,7 +235,7 @@ Confirmer mot de passe
             onChangeText={text => this.setState({ lastname: text })}
           />
           <Text style={(this.state.isEmailValid)
-            ? ({ ...styles.text, color: 'green' }) : (styles.text)}
+            ? (styles.textGreen) : (styles.text)}
           >
 Email
           </Text>
@@ -303,6 +308,8 @@ const mapDispatchToProps = dispatch => ({
     createUser(phone, password, firstname, lastname, email, profile),
   ),
   loadProfiles: () => dispatch(loadProfiles()),
+  logoutUser: () => dispatch(logoutUser()),
+  deleteAllContact: () => dispatch(deleteAllContact()),
 });
 
 export default connect(
