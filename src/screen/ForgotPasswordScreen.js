@@ -61,7 +61,7 @@ export class ForgotPasswordScreen extends Component {
     super(props);
     this.state = {
       phone: '',
-      isPhoneLenghtCorrect: false
+      isPhoneLenghtCorrect: false,
     };
 
     this.handlePhoneInput = this.handlePhoneInput.bind(this);
@@ -99,7 +99,7 @@ export class ForgotPasswordScreen extends Component {
                       Alert.alert('Attention', 'Ce numéro de téléphone n\'éxiste pas');
                     }
                   })
-                  .catch(() =>{
+                  .catch(() => {
                     Alert.alert('Succes', 'Votre mot de passe à bien été envoyé');
                     this.props.navigation.navigate('Login');
                   });

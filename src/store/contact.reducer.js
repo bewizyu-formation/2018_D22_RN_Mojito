@@ -58,7 +58,7 @@ export function contactReducer(state = initialState, action) {
             lastName: action.lastname,
             email: action.email,
             profile: action.profile,
-            gravatar: action.gravatar,
+            gravatar: 'https://www.gravatar.com/avatar/',
             isFamilinkUser: action.isFamilinkUser,
             isEmergencyUser: action.isEmergencyUser,
             _id: action._id,
