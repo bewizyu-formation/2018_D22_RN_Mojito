@@ -1,9 +1,16 @@
 import React, { Component } from 'react';
 import {
-  TouchableOpacity, Text,
+  TouchableOpacity, Text, Image, StyleSheet
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+
+const styles = StyleSheet.create({
+  imageStyle:{
+    height: 48,
+    width: 48,
+  },
+})
 
 class AddButton extends Component {
   constructor(props) {
@@ -20,7 +27,7 @@ class AddButton extends Component {
         }
       }}
       >
-        <Text>Ajouter</Text>
+        <Image style={styles.imageStyle} source={require('../../assets/plus-icon.png')}/>
       </TouchableOpacity>
     );
   }
