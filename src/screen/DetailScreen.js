@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { deleteContact, deleteAllContact } from '../store/contact.action';
+import { deleteContact, deleteAllContact, updateContact } from '../store/contact.action';
 import { logoutUser } from '../store/connect.action';
 // import { TextInput, ScrollView } from 'react-native-gesture-handler';
 
@@ -132,7 +132,6 @@ export class DetailScreen extends Component {
   }
 
   componentDidMount() {
-    this.props.loadProfiles();
     const { navigation } = this.props;
     this.setState({ firstName: navigation.getParam('firstName', 'Un prénom') });
     this.setState({ lastName: navigation.getParam('lastName', 'Un nom') });
@@ -361,7 +360,6 @@ DetailScreen.propTypes = {
   }).isRequired,
   connectivity: PropTypes.bool.isRequired,
   token: PropTypes.string.isRequired,
-  loadProfiles: PropTypes.func.isRequired,
   deleteContact: PropTypes.func.isRequired,
   deleteAllContact: PropTypes.func.isRequired,
   updateContact: PropTypes.func.isRequired,
@@ -378,7 +376,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  loadProfiles: () => dispatch(loadProfiles()),
   deleteContact: (token, _id) => dispatch(deleteContact(token, _id)),
   updateContact: (token, idContact, phone, firstName, lastName, email, profile, gravatar, isFamilinkUser, isEmergencyUser) => dispatch(updateContact(token, idContact, phone, firstName, lastName, email, profile, gravatar, isFamilinkUser, isEmergencyUser)),
   logoutUser: () => dispatch(logoutUser()),

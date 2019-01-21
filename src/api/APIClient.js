@@ -130,7 +130,7 @@ export default class APIClient {
   static updateContact(token, idContact, contactPhoneNumber, contactFirstName,
     contactLastName, contactEmail, contactProfile, contactGravatar,
     contactIsFamilinkUser, contactIsEmergencyUser) {
-    fetch(`https://familink-api.cleverapps.io/secured/users/contacts/${idContact}`,
+    return fetch(`https://familink-api.cleverapps.io/secured/users/contacts/${idContact}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -148,8 +148,6 @@ export default class APIClient {
           isEmergencyUser: contactIsEmergencyUser,
         }),
       })
-      .then(response => response.json())
-      .then(responseJSON => responseJSON)
       .catch();
   }
 
