@@ -8,6 +8,8 @@ import { connect } from 'react-redux';
 import { forgotPassword } from '../store/connect.action';
 
 const window = Dimensions.get('window');
+const phoneLength = 10;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -59,7 +61,19 @@ export class ForgotPasswordScreen extends Component {
     super(props);
     this.state = {
       phone: '',
+      isPhoneLenghtCorrect: false
     };
+
+    this.handlePhoneInput = this.handlePhoneInput.bind(this);
+  }
+
+  handlePhoneInput(text) {
+    if (text.length <= phoneLength) {
+      this.setState({
+        phone: text,
+        isPhoneLenghtCorrect: (text.length === phoneLength),
+      });
+    }
   }
 
   render() {
@@ -71,7 +85,7 @@ export class ForgotPasswordScreen extends Component {
           placeholder="Entrer votre numéro de téléphone"
           keyboardType="phone-pad"
           value={this.state.phone}
-          onChangeText={text => this.setState({ phone: text })}
+          onChangeText={text => this.handlePhoneInput(text)}
         />
         <TouchableHighlight
           onPress={() => {
@@ -81,12 +95,13 @@ export class ForgotPasswordScreen extends Component {
               } else {
                 this.props.forgotPassword(this.state.phone)
                   .then(() => {
-                    if (this.props.forgotError === undefined) {
-                      Alert.alert('Succes', 'Votre mot de passe à bien été envoyé');
-                      this.props.navigation.navigate('Login');
-                    } else {
+                    if (this.props.forgotError !== undefined) {
                       Alert.alert('Attention', 'Ce numéro de téléphone n\'éxiste pas');
                     }
+                  })
+                  .catch(() =>{
+                    Alert.alert('Succes', 'Votre mot de passe à bien été envoyé');
+                    this.props.navigation.navigate('Login');
                   });
               }
             } else {
