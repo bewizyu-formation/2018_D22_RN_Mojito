@@ -49,8 +49,6 @@ export default class APIClient {
           phone: userPhoneNumber,
         }),
       })
-      .then(response => response.json())
-      .then(responseJSON => responseJSON)
       .catch();
   }
 
