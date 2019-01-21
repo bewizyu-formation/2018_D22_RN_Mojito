@@ -170,7 +170,11 @@ class LoginScreen extends Component {
 
             <TouchableHighlight
               onPress={() => {
-                this.props.navigation.navigate('CreateAccount');
+                if(this.props.connectivity){
+                  this.props.navigation.navigate('CreateAccount');
+                }else{
+                  Alert.alert('Vous n\'avez pas de connection Internet');
+                }
               }}
               style={styles.secondaryButton}
             >
