@@ -61,6 +61,7 @@ export function contactAdded(data) {
     gravatar: data.gravatar,
     isFamilinkUser: data.isFamilinkUser,
     isEmergencyUser: data.isEmergencyUser,
+    _id: data._id,
     error: data.message,
   };
 }
