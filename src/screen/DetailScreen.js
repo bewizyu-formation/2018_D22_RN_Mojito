@@ -277,7 +277,7 @@ export class DetailScreen extends Component {
 
               </TouchableOpacity>
               <TouchableOpacity>
-                {imageUser}
+                <Image style={styles.imageStyleGravatar} source={{ uri: this.state.gravatar }} />
               </TouchableOpacity>
 
               <TouchableOpacity onPress={() => {

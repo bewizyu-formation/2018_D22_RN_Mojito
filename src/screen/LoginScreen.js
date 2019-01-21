@@ -83,8 +83,8 @@ class LoginScreen extends Component {
     super(props);
 
     this.state = {
-      phone: '0600000002',
-      password: '0000',
+      phone: '',
+      password: '',
     };
     this.handlePasswordInput = this.handlePasswordInput.bind(this);
     this.handlePhoneInput = this.handlePhoneInput.bind(this);

@@ -167,7 +167,7 @@ export default class APIClient {
           lastName: contactLastName,
           email: contactEmail,
           profile: contactProfile,
-          gravatar: contactGravatar,
+          gravatar: 'https://www.gravatar.com/avatar/',
           isFamilinkUser: contactIsFamilinkUser,
           isEmergencyUser: contactIsEmergencyUser,
         }),
