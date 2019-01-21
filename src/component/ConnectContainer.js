@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { NetInfo, View } from 'react-native';
+import { NetInfo } from 'react-native';
 
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { AppContainer } from '../screen/StackNavigator';
+import AppContainer from '../screen/StackNavigator';
 import { updateConnectivity } from '../store/connect.action';
 
 export class ConnectContainer extends Component {
@@ -36,11 +36,9 @@ export class ConnectContainer extends Component {
 }
 
 ConnectContainer.propTypes = {
-  connectivity: PropTypes.bool.isRequired,
   updateConnectivity: PropTypes.func.isRequired,
 };
 const mapStateToProps = state => ({
-  connectivity: state.connect.connectivity,
 });
 const mapDispatchToProps = dispatch => ({
   updateConnectivity: connectivity => dispatch(updateConnectivity(connectivity)),

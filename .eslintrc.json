@@ -33,6 +33,8 @@
         "react/prefer-stateless-function": "off", 
         "no-nested-ternary":  "off",
         "react/require-default-props": "off",
+        "react/no-access-state-in-setstate": "off",
+        "react/no-unescaped-entities": "off",
         "import/no-extraneous-dependencies": ["error",{"devDependencies": true}]
     }
 }

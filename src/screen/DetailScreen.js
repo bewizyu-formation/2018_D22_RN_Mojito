@@ -16,7 +16,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { deleteContact, deleteAllContact, updateContact } from '../store/contact.action';
 import { logoutUser } from '../store/connect.action';
-// import { TextInput, ScrollView } from 'react-native-gesture-handler';
+
 
 const styles = StyleSheet.create({
   container: {
@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   backgroundGeneral: {
+    flex: 1,
     backgroundColor: '#FECB98',
   },
   textStyle: {
@@ -98,13 +99,20 @@ const styles = StyleSheet.create({
     height: 80,
     width: 80,
   },
+  keyboardAvoiding: {
+    flex: 2,
+  },
+  picker: {
+    height: 40,
+    width: 250,
+  },
 });
 
 const phoneLength = 10;
 const emailRegEx = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 export class DetailScreen extends Component {
-  static navigationOptions = ({ navigation }) => ({
+  static navigationOptions = () => ({
     headerTitle: 'Détails',
   });
 
@@ -173,7 +181,10 @@ export class DetailScreen extends Component {
 
   handleContactUpdate() {
     if (this.props.connectivity) {
-      this.setState({ _id: this.state.firstName + this.state.lastName + this.state.phone + this.state.email });
+      this.setState({
+        _id: this.state.firstName + this.state.lastName
+        + this.state.phone + this.state.email,
+      });
       this.props.updateContact(
         this.props.token,
         this.state._id,
@@ -188,7 +199,7 @@ export class DetailScreen extends Component {
       ).then(() => {
         if (this.props.updateError !== undefined) {
           if (this.props.updateError === 'Security token invalid or expired') {
-            Alert.alert('Votre session a expirée');
+            Alert.alert('Attention', 'Votre session a expirée');
             this.props.logoutUser();
             this.props.deleteAllContact();
             this.props.navigation.navigate('Login');
@@ -202,7 +213,7 @@ export class DetailScreen extends Component {
       })
         .catch();
     } else {
-      Alert.alert('Pas de connexion internet');
+      Alert.alert('Attention', 'Pas de connexion internet');
     }
   }
 
@@ -229,13 +240,12 @@ export class DetailScreen extends Component {
     } else {
       imageUser = <Image style={styles.imageStyleNoGravatar} source={require('../../assets/user-icon.png')} />;
     }
-    // console.log('id contact : ', _id);
 
 
     return (
-      <View style={[{ flex: 1 }, styles.backgroundGeneral]}>
+      <View style={styles.backgroundGeneral}>
         <ScrollView>
-          <KeyboardAvoidingView style={{ flex: 2 }}>
+          <KeyboardAvoidingView style={styles.keyboardAvoiding}>
             <View style={[styles.iconAlignement]}>
               <TouchableOpacity
                 onPress={
@@ -245,15 +255,19 @@ export class DetailScreen extends Component {
                         .then(
                           () => {
                             if (this.props.deleteError !== undefined) {
-                              alert('Votre session a expiré');
-                              this.disconnectUser();
+                              if (this.props.deleteError === 'Security token invalid or expired') {
+                                Alert.alert('Attention', 'Votre session a expiré');
+                                this.disconnectUser();
+                              } else {
+                                Alert.alert('Erreur de suppression', this.props.deleteError);
+                              }
                             } else {
-                              navigation.navigate('Contacts');
+                              this.props.navigation.navigate('Contacts');
                             }
                           },
                         );
                     } else {
-                      alert('Vous n\'êtes pas connecté à Internet');
+                      Alert.alert('Attention', 'Vous n\'êtes pas connecté à Internet');
                       this.disconnectUser();
                     }
                   }
@@ -285,13 +299,15 @@ export class DetailScreen extends Component {
             </View>
             <View style={[styles.container, styles.backgroundGeneral]}>
               <TextInput
-                style={this.state.editMode ? styles.editTextStyleIdentity : styles.textStyleIdentity}
+                style={this.state.editMode
+                  ? styles.editTextStyleIdentity : styles.textStyleIdentity}
                 editable={this.state.editMode}
                 value={this.state.firstName}
                 onChangeText={text => this.setState({ firstName: text })}
               />
               <TextInput
-                style={this.state.editMode ? styles.editTextStyleIdentity : styles.textStyleIdentity}
+                style={this.state.editMode
+                  ? styles.editTextStyleIdentity : styles.textStyleIdentity}
                 editable={this.state.editMode}
                 value={this.state.lastName}
                 onChangeText={text => this.setState({ lastName: text })}
@@ -313,8 +329,8 @@ export class DetailScreen extends Component {
                   selectedValue={this.state.profile}
                   prompt="Profil du contact"
                   mode="dropdown"
-                  style={{ height: 40, width: 250 }}
-                  onValueChange={(itemValue, itemIndex) => this.pickerChange(itemIndex)}
+                  style={styles.picker}
+                  onValueChange={itemIndex => this.pickerChange(itemIndex)}
                 >
                   {
                     this.props.profiles.map(v => <Picker.Item key={v} color="#FF6C00" label={v} value={v} />)
@@ -365,6 +381,8 @@ DetailScreen.propTypes = {
   updateContact: PropTypes.func.isRequired,
   logoutUser: PropTypes.func.isRequired,
   profiles: PropTypes.arrayOf(PropTypes.string).isRequired,
+  updateError: PropTypes.string,
+  deleteError: PropTypes.string,
 };
 
 const mapStateToProps = state => ({
@@ -377,7 +395,10 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   deleteContact: (token, _id) => dispatch(deleteContact(token, _id)),
-  updateContact: (token, idContact, phone, firstName, lastName, email, profile, gravatar, isFamilinkUser, isEmergencyUser) => dispatch(updateContact(token, idContact, phone, firstName, lastName, email, profile, gravatar, isFamilinkUser, isEmergencyUser)),
+  updateContact: (token, idContact, phone, firstName,
+    lastName, email, profile, gravatar,
+    isFamilinkUser, isEmergencyUser) => dispatch(updateContact(token, idContact, phone,
+    firstName, lastName, email, profile, gravatar, isFamilinkUser, isEmergencyUser)),
   logoutUser: () => dispatch(logoutUser()),
   deleteAllContact: () => dispatch(deleteAllContact()),
 });

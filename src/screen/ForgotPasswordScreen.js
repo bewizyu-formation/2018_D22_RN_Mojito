@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
-  Text, TextInput, View, Dimensions, StyleSheet, TouchableHighlight,
+  Text, TextInput, View, Dimensions, StyleSheet,
+  TouchableHighlight, Alert,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -76,21 +77,20 @@ export class ForgotPasswordScreen extends Component {
           onPress={() => {
             if (this.props.connectivity) {
               if (this.state.phone.length !== 10) {
-                alert('Numéro de téléphone invalide');
+                Alert.alert('Erreur de saisie', 'Numéro de téléphone invalide');
               } else {
                 this.props.forgotPassword(this.state.phone)
                   .then(() => {
                     if (this.props.forgotError === undefined) {
-                      console.log(forgotError);
-                      alert('Votre mot de passe à bien été envoyé');
+                      Alert.alert('Succes', 'Votre mot de passe à bien été envoyé');
                       this.props.navigation.navigate('Login');
                     } else {
-                      alert('Votre connexion Internet n\'est pas établie');
+                      Alert.alert('Attention', 'Ce numéro de téléphone n\'éxiste pas');
                     }
                   });
               }
             } else {
-              alert('Pas de connexion internet');
+              Alert.alert('Attention', 'Pas de connexion internet');
             }
           }}
           style={styles.primaryButton}

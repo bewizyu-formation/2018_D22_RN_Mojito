@@ -36,18 +36,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF6C00',
   },
   textInactive: {
-    color: '#FFF'
+    color: '#FFF',
   },
-  textActive:{
-    color: '#000'
+  textActive: {
+    color: '#000',
   },
   containerStyleSearchBar: {
     backgroundColor: '#FFF',
   },
-  delimiter:{
+  delimiter: {
     height: 2,
-    backgroundColor: '#FECB98'
-  }
+    backgroundColor: '#FECB98',
+  },
 });
 
 class ContactsScreen extends Component {
@@ -156,7 +156,7 @@ class ContactsScreen extends Component {
               <Text style={
                 [styles.textStyle,
                   this.state.activeAll ? backgroundActive : backgroundInactive,
-                  this.state.activeAll ? textActive : textInactive
+                  this.state.activeAll ? textActive : textInactive,
                 ]}
               >
                 TOUS
@@ -178,7 +178,7 @@ class ContactsScreen extends Component {
               <Text style={
                 [styles.textStyle,
                   this.state.activeFamily ? backgroundActive : backgroundInactive,
-                  this.state.activeFamily ? textActive : textInactive
+                  this.state.activeFamily ? textActive : textInactive,
                 ]}
               >
                 FAMILLE
@@ -200,7 +200,7 @@ class ContactsScreen extends Component {
               <Text style={
                 [styles.textStyle,
                   this.state.activeSenior ? backgroundActive : backgroundInactive,
-                  this.state.activeSenior ? textActive : textInactive
+                  this.state.activeSenior ? textActive : textInactive,
                 ]}
               >
                 SENIOR
@@ -222,7 +222,7 @@ class ContactsScreen extends Component {
               <Text style={
                 [styles.textStyle,
                   this.state.activeMedical ? backgroundActive : backgroundInactive,
-                  this.state.activeMedical ? textActive : textInactive
+                  this.state.activeMedical ? textActive : textInactive,
                 ]}
               >
                 MEDECIN
@@ -245,14 +245,14 @@ class ContactsScreen extends Component {
               <Text style={
                 [styles.textStyle,
                   this.state.activeEmergency ? backgroundActive : backgroundInactive,
-                  this.state.activeEmergency ? textActive : textInactive
+                  this.state.activeEmergency ? textActive : textInactive,
                 ]}
               >
                 URGENT
               </Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.delimiter}></View>
+          <View style={styles.delimiter} />
           <FlatList
             style={styles.footerSpaceLastContact}
             data={contacts}
@@ -279,17 +279,19 @@ ContactsScreen.propTypes = {
   }).isRequired,
   connectivity: PropTypes.bool.isRequired,
   token: PropTypes.string.isRequired,
-  contacts: PropTypes.shape({
-    phone: PropTypes.string.isRequired,
-    firstName: PropTypes.string.isRequired,
-    lastName: PropTypes.string.isRequired,
-    email: PropTypes.string.isRequired,
-    profile: PropTypes.string.isRequired,
-    gravatar: PropTypes.string.isRequired,
-    isFamilinkUser: PropTypes.bool.isRequired,
-    isEmergencyUser: PropTypes.bool.isRequired,
-    _id: PropTypes.string.isRequired,
-  }).isRequired,
+  contacts: PropTypes.arrayOf(
+    PropTypes.shape({
+      phone: PropTypes.string.isRequired,
+      firstName: PropTypes.string.isRequired,
+      lastName: PropTypes.string.isRequired,
+      email: PropTypes.string.isRequired,
+      profile: PropTypes.string.isRequired,
+      gravatar: PropTypes.string.isRequired,
+      isFamilinkUser: PropTypes.bool.isRequired,
+      isEmergencyUser: PropTypes.bool.isRequired,
+      _id: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
   contactsError: PropTypes.string,
   loadContacts: PropTypes.func.isRequired,
   loadProfiles: PropTypes.func.isRequired,
