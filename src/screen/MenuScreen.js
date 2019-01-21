@@ -177,8 +177,8 @@ export class MenuScreen extends Component {
   handleAccountUpdate() {
     if (this.props.connectivity) {
       if (this.state.isEmailValid
-        && this.state.firstname.length >= 4
-        && this.state.lastname.length >= 4) {
+        && this.state.firstname.length >= 2
+        && this.state.lastname.length >= 2) {
         this.props.updateUser(this.props.token, this.state.firstname,
           this.state.lastname, this.state.email, this.state.profile)
           .then(() => {
@@ -202,7 +202,7 @@ export class MenuScreen extends Component {
             }
           });
       } else {
-        Alert.alert('Erreur de saisie', 'Merci de renseigner un email valide.');
+        Alert.alert('Erreur de saisie', 'Merci de renseigner un email valide et un nom et un prénom d\'au moins 2 caractères');
       }
     } else {
       Alert.alert('Attention', 'Pas de connexion internet.');
@@ -217,14 +217,14 @@ export class MenuScreen extends Component {
             Numéro de téléphone
           </Text>
           <Text style={styles.text}>{this.props.phone}</Text>
-          <Text style={styles.text}>Prénom</Text>
+          <Text style={styles.text}>Prénom (min 2 caractères)</Text>
           <TextInput
             style={styles.textInput}
             value={this.state.firstname}
             editable={this.state.isEditable}
             onChangeText={text => this.setState({ firstname: text })}
           />
-          <Text style={styles.text}>Nom de famille</Text>
+          <Text style={styles.text}>Nom (min 2 caractères)</Text>
           <TextInput
             style={styles.textInput}
             value={this.state.lastname}

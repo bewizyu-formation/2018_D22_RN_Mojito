@@ -124,8 +124,6 @@ export default class APIClient {
         },
         method: 'DELETE',
       })
-      .then(response => response.json())
-      .then(responseJSON => responseJSON)
       .catch();
   }
 

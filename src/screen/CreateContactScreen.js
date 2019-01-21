@@ -147,7 +147,7 @@ class CreateContactScreen extends Component {
         <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
           <Image
             style={styles.logo}
-            source={{ uri: 'http://www.startup-innovation.fr/img/empty.png' }}
+            source={require('../../assets/logo-app.png')}
           />
           <Text style={styles.text}>Nom</Text>
           <TextInput
@@ -300,8 +300,9 @@ class CreateContactScreen extends Component {
                   if (this.state.lastname !== '' && this.state.phone !== '' && this.state.isValidPhone
                     && this.state.email !== '' && this.state.isValidEmail) {
                     this.props.addContact(
+                      this.props.token,
                       this.state.phone,
-                      this.state.firstName,
+                      this.state.firstname,
                       this.state.lastname,
                       this.state.email,
                       this.state.profile,
@@ -309,6 +310,7 @@ class CreateContactScreen extends Component {
                       this.state.familinkUser,
                       this.state.emergency,
                     ).then(() => {
+                      console.log(this.props.addingError);
                       if (this.props.addingError !== undefined) {
                         if(this.props.addingError === 'Security token invalid or expired'){
                           Alert.alert('Votre session a expirée');
@@ -356,13 +358,15 @@ CreateContactScreen.propTypes = {
   profiles: PropTypes.arrayOf(PropTypes.string).isRequired,
   deleteAllContact: PropTypes.func.isRequired,
   logoutUser: PropTypes.func.isRequired,
-  addingError: PropTypes.string
+  addingError: PropTypes.string,
+  token: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = state => ({
   connectivity: state.connect.connectivity,
   profiles: state.contact.profiles,
-  addingError: state.contact.addingError
+  addingError: state.contact.addingError,
+  token: state.connect.token,
 });
 const mapDispatchToProps = dispatch => ({
   loadProfiles: () => dispatch(loadProfiles()),
