@@ -19,18 +19,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   footerSpaceLastContact: {
-    height: '87%',
+    height: '85%',
   },
   textStyle: {
-    color: '#FFF',
     marginRight: Platform.OS === 'ios' ? 8 : 12,
-    fontSize: Platform.OS === 'ios' ? 15 : 17,
+    fontSize: Platform.OS === 'ios' ? 12 : 14,
+    paddingRight: 5,
+    paddingLeft: 5
   },
   textBackgroundActive: {
     backgroundColor: '#FECB98',
   },
   textBackgroundInactive: {
     backgroundColor: '#FF6C00',
+  },
+  textInactive: {
+    color: '#FFF'
+  },
+  textActive:{
+    color: '#000'
   },
   containerStyleSearchBar: {
     backgroundColor: '#FFF',
@@ -111,6 +118,8 @@ class ContactsScreen extends Component {
       let contacts = this.props.contacts;
       const backgroundActive = styles.textBackgroundActive;
       const backgroundInactive = styles.textBackgroundInactive;
+      const textActive = styles.textActive;
+      const textInactive = styles.textInactive;
       if (this.props.navigation.getParam('filteredContacts') !== undefined) {
         contacts = this.props.navigation.getParam('filteredContacts');
       }
@@ -141,6 +150,7 @@ class ContactsScreen extends Component {
               <Text style={
                 [styles.textStyle,
                   this.state.activeAll ? backgroundActive : backgroundInactive,
+                  this.state.activeAll ? textActive : textInactive
                 ]}
               >
                 TOUS
@@ -162,6 +172,7 @@ class ContactsScreen extends Component {
               <Text style={
                 [styles.textStyle,
                   this.state.activeFamily ? backgroundActive : backgroundInactive,
+                  this.state.activeFamily ? textActive : textInactive
                 ]}
               >
                 FAMILLE
@@ -183,6 +194,7 @@ class ContactsScreen extends Component {
               <Text style={
                 [styles.textStyle,
                   this.state.activeSenior ? backgroundActive : backgroundInactive,
+                  this.state.activeSenior ? textActive : textInactive
                 ]}
               >
                 SENIOR
@@ -203,7 +215,9 @@ class ContactsScreen extends Component {
             >
               <Text style={
                 [styles.textStyle,
-                  this.state.activeMedical ? backgroundActive : backgroundInactive]}
+                  this.state.activeMedical ? backgroundActive : backgroundInactive,
+                  this.state.activeMedical ? textActive : textInactive
+                ]}
               >
                 MEDECIN
               </Text>
@@ -224,7 +238,9 @@ class ContactsScreen extends Component {
             >
               <Text style={
                 [styles.textStyle,
-                  this.state.activeEmergency ? backgroundActive : backgroundInactive]}
+                  this.state.activeEmergency ? backgroundActive : backgroundInactive,
+                  this.state.activeEmergency ? textActive : textInactive
+                ]}
               >
                 URGENT
               </Text>
