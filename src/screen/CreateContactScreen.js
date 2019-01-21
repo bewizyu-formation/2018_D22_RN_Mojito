@@ -147,7 +147,7 @@ class CreateContactScreen extends Component {
         <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
           <Image
             style={styles.logo}
-            source={{ uri: 'http://www.startup-innovation.fr/img/empty.png' }}
+            source={require('../../assets/logo-app.png')}
           />
           <Text style={styles.text}>Nom</Text>
           <TextInput
