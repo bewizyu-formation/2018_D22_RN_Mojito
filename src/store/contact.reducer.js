@@ -1,7 +1,7 @@
 import {
   PROFILES_LOADED, LOAD_PROFILES, CONTACTS_LOADED, LOAD_CONTACTS,
   CONTACT_ADDED, ADD_CONTACT, CONTACT_DELETED, DELETE_CONTACT,
-  CONTACT_UPDATED, UPDATE_CONTACT, DELETE_ALL_CONTACT
+  CONTACT_UPDATED, UPDATE_CONTACT, DELETE_ALL_CONTACT,
 } from './contact.action';
 
 export const initialState = {
@@ -95,6 +95,7 @@ export function contactReducer(state = initialState, action) {
       const updateContact = state.contacts.find(item => item._id === action.idContact);
       updateContact.firstName = action.firstName;
       updateContact.lastName = action.lastName;
+      updateContact.phone = action.phone;
       updateContact.email = action.email;
       updateContact.profile = action.profile;
       updateContact.gravatar = action.gravatar;
@@ -129,7 +130,7 @@ export function contactReducer(state = initialState, action) {
         addingError: undefined,
         deleteError: undefined,
         updateError: undefined,
-      }
+      };
     }
     default:
       return state;

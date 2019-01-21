@@ -15,7 +15,7 @@ export const DELETE_CONTACT = 'DELETE_CONTACT';
 export const CONTACT_UPDATED = 'CONTACT_UPDATED';
 export const UPDATE_CONTACT = 'UPDATE_CONTACT';
 
-export const DELETE_ALL_CONTACT = 'DELETE_ALL_CONTACT'
+export const DELETE_ALL_CONTACT = 'DELETE_ALL_CONTACT';
 
 export function profilesLoaded(data) {
   return {
@@ -100,8 +100,8 @@ export function contactUpdated(data, idContact, phone, firstName, lastName, emai
     error: data.message,
     idContact,
     phone,
-    firstname: firstName,
-    lastname: lastName,
+    firstName,
+    lastName,
     email,
     profile,
     gravatar,
@@ -122,8 +122,8 @@ export function updateContact(token, idContact, phone, firstName, lastName, emai
   };
 }
 
-export function deleteAllContact(){
-  return{
+export function deleteAllContact() {
+  return {
     type: DELETE_ALL_CONTACT,
-  }
+  };
 }
