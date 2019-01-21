@@ -1,6 +1,16 @@
 import React, { Component } from 'react';
 import {
-  Text, View, TouchableOpacity, Image, StyleSheet, Linking, TextInput, ScrollView, KeyboardAvoidingView, Picker,
+  Alert,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Linking,
+  TextInput,
+  ScrollView,
+  KeyboardAvoidingView,
+  Picker,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -67,9 +77,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
   },
-  marginRight30: {
-    marginRight: 30,
-  },
   imageStyle: {
     height: 48,
     width: 48,
@@ -106,7 +113,6 @@ export class DetailScreen extends Component {
 
     this.state = {
       editMode: false,
-      isModified: false,
       firstName: '',
       lastName: '',
       phone: '',
@@ -116,14 +122,13 @@ export class DetailScreen extends Component {
       gravatar: '',
       profile: '',
       _id: '',
-
+      isEmergencyUser: '',
     };
 
     this.pickerChange = this.pickerChange.bind(this);
     this.handleContactUpdate = this.handleContactUpdate.bind(this);
     this.handlePhoneInput = this.handlePhoneInput.bind(this);
     this.handleEmailInput = this.handleEmailInput.bind(this);
-    
   }
 
   componentDidMount() {
@@ -136,20 +141,17 @@ export class DetailScreen extends Component {
     this.setState({ profile: navigation.getParam('profile', 'Un groupe') });
     this.setState({ _id: navigation.getParam('id', 'un id') });
     this.setState({ gravatar: navigation.getParam('gravatar', null) });
-
-    const isEmergencyUser = navigation.getParam('isEmergencyUser', false);
+    this.setState({ isEmergencyUser: navigation.getParam('isEmergencyUser', false) });
   }
 
-  onPressEdit(){
-    if(!this.state.editMode){
-      this.setState({editMode: true})
-    }else{
-      if(this.state.firstName !== '' && this.state.lastName !== '' && this.state.isValidPhone && this.state.isValidEmail){
-        this.handleContactUpdate();
-      }else{
-        Alert.alert("un ou plusieurs champs sont mal renseignés");
-      }
-      
+  onPressEdit() {
+    if (!this.state.editMode) {
+      this.setState({ editMode: true });
+    } else if (this.state.firstName !== '' && this.state.lastName !== ''
+                && this.state.isValidPhone && this.state.isValidEmail) {
+      this.handleContactUpdate();
+    } else {
+      Alert.alert('un ou plusieurs champs sont mal renseignés');
     }
   }
 
@@ -170,8 +172,9 @@ export class DetailScreen extends Component {
   }
 
 
-  handleContactUpdate(){
+  handleContactUpdate() {
     if (this.props.connectivity) {
+      this.setState({ _id: this.state.firstName + this.state.lastName + this.state.phone + this.state.email });
       this.props.updateContact(
         this.props.token,
         this.state._id,
@@ -182,7 +185,7 @@ export class DetailScreen extends Component {
         this.state.profile,
         this.state.gravatar,
         true,
-        false,
+        this.state.isEmergencyUser,
       ).then(() => {
         if (this.props.updateError !== undefined) {
           if (this.props.updateError === 'Security token invalid or expired') {
@@ -190,17 +193,18 @@ export class DetailScreen extends Component {
             this.props.logoutUser();
             this.props.deleteAllContact();
             this.props.navigation.navigate('Login');
-          }else{
+          } else {
             Alert.alert(this.props.updateError);
           }
-        }else{
-          this.setState({editMode: false});
+        } else {
+          this.setState({ editMode: false });
+          this.props.navigation.navigate('Contacts');
         }
-      });
+      })
+        .catch();
     } else {
       Alert.alert('Pas de connexion internet');
     }
-
   }
 
   pickerChange(index) {
@@ -262,16 +266,23 @@ export class DetailScreen extends Component {
               <TouchableOpacity>
                 {imageUser}
               </TouchableOpacity>
-              
-                <TouchableOpacity onPress={() => {
-                    this.onPressEdit();
-                  
+
+              <TouchableOpacity onPress={() => {
+                this.onPressEdit();
+              }
                 }
+              >
+                {this.state.editMode ? (
+                  <Image style={styles.imageStyle} source={require('../../assets/edit-icon.png')} />
+                ) : (
+                  <Image style={styles.imageStyle} source={require('../../assets/edit-icon.png')} />
+                )
                 }
-                ><Image style={styles.imageStyle} source={require('../../assets/edit-icon.png')} />
-                </TouchableOpacity>
-              
-          
+
+
+              </TouchableOpacity>
+
+
             </View>
             <View style={[styles.container, styles.backgroundGeneral]}>
               <TextInput
@@ -326,13 +337,13 @@ export class DetailScreen extends Component {
         ) : (
           <View style={styles.footerIcons}>
             <View style={styles.iconSpacing}>
-              <TouchableOpacity onPress={() => Linking.openURL(`sms:${phone}`)}>
+              <TouchableOpacity onPress={() => Linking.openURL(`sms:${this.state.phone}`)}>
                 <Image style={styles.imageStyleBottom} source={require('../../assets/sms-icon.png')} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => Linking.openURL(`mailto:${email}`)} title="email test">
+              <TouchableOpacity onPress={() => Linking.openURL(`mailto:${this.state.email}`)} title="email test">
                 <Image style={styles.imageStyleBottom} source={require('../../assets/email-icon.png')} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => Linking.openURL(`tel:${phone}`)}>
+              <TouchableOpacity onPress={() => Linking.openURL(`tel:${this.state.phone}`)}>
                 <Image style={styles.imageStyleBottom} source={require('../../assets/phone-icon.png')} />
               </TouchableOpacity>
             </View>
@@ -355,6 +366,7 @@ DetailScreen.propTypes = {
   deleteAllContact: PropTypes.func.isRequired,
   updateContact: PropTypes.func.isRequired,
   logoutUser: PropTypes.func.isRequired,
+  profiles: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -362,13 +374,13 @@ const mapStateToProps = state => ({
   token: state.connect.token,
   profiles: state.contact.profiles,
   deleteError: state.connect.deleteError,
-  updateError: state.connect.updateError
+  updateError: state.connect.updateError,
 });
 
 const mapDispatchToProps = dispatch => ({
   loadProfiles: () => dispatch(loadProfiles()),
   deleteContact: (token, _id) => dispatch(deleteContact(token, _id)),
-  updateContact: (token, idContact, phone, firstName, lastName, email, profile,gravatar, isFamilinkUser, isEmergencyUser) => dispatch(updateContact(token, idContact, phone, firstName, lastName, email, profile,gravatar, isFamilinkUser, isEmergencyUser)),
+  updateContact: (token, idContact, phone, firstName, lastName, email, profile, gravatar, isFamilinkUser, isEmergencyUser) => dispatch(updateContact(token, idContact, phone, firstName, lastName, email, profile, gravatar, isFamilinkUser, isEmergencyUser)),
   logoutUser: () => dispatch(logoutUser()),
   deleteAllContact: () => dispatch(deleteAllContact()),
 });
