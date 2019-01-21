@@ -22,10 +22,12 @@ const styles = StyleSheet.create({
     height: '85%',
   },
   textStyle: {
-    marginRight: Platform.OS === 'ios' ? 8 : 12,
-    fontSize: Platform.OS === 'ios' ? 12 : 14,
+    marginRight: Platform.OS === 'ios' ? 5 : 10,
+    fontSize: Platform.OS === 'ios' ? 13 : 15,
     paddingRight: 5,
-    paddingLeft: 5
+    paddingLeft: 5,
+    paddingTop: Platform.OS === 'ios' ? 5 : 0,
+    height: 25,
   },
   textBackgroundActive: {
     backgroundColor: '#FECB98',
@@ -42,6 +44,10 @@ const styles = StyleSheet.create({
   containerStyleSearchBar: {
     backgroundColor: '#FFF',
   },
+  delimiter:{
+    height: 2,
+    backgroundColor: '#FECB98'
+  }
 });
 
 class ContactsScreen extends Component {
@@ -246,6 +252,7 @@ class ContactsScreen extends Component {
               </Text>
             </TouchableOpacity>
           </View>
+          <View style={styles.delimiter}></View>
           <FlatList
             style={styles.footerSpaceLastContact}
             data={contacts}
